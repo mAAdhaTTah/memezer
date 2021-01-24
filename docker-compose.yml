@@ -1,0 +1,46 @@
+version: "3.3"
+services:
+  db:
+    image: postgres:12
+    volumes:
+      - db:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+
+  api:
+    depends_on:
+      - db
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    ports:
+      - 80:80
+    volumes:
+      - ./:/app
+      - ./media:/media
+
+  migrations:
+    depends_on:
+      - db
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    command: alembic upgrade head
+    volumes:
+      - ./:/app
+      - ./media:/media
+
+volumes:
+  db:
