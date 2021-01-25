@@ -2,12 +2,29 @@ FROM python:3.9.0 as api_build
 
 WORKDIR /app
 
-COPY ./requirements.txt requirements.txt
+COPY ./api/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 ARG INSTALL_DEV=false
-COPY ./requirements.dev.txt requirements.dev.txt
+COPY ./api/requirements.dev.txt requirements.dev.txt
 RUN bash -c "if [ $INSTALL_DEV == 'true' ]; then pip install --no-cache-dir -r requirements.dev.txt; fi"
+
+COPY ./api/memezer memezer
+COPY ./api/alembic alembic
+
+FROM node:14 as web_build
+
+WORKDIR /app
+
+COPY ./web/package.json package.json
+COPY ./web/package-lock.json package-lock.json
+
+RUN npm ci
+
+COPY ./web/src src
+COPY ./web/public public
+
+RUN npm run build
 
 FROM python:3.9.0 as app
 
@@ -18,7 +35,10 @@ COPY --from=api_build /usr/local/bin /usr/local/bin
 
 WORKDIR /app
 
-ADD ./gunicorn.conf.py gunicorn.conf.py
-COPY ./memezer memezer
+COPY --from=api_build /app/memezer ./memezer
+COPY --from=api_build /app/alembic ./alembic
+COPY --from=web_build /app/build ./build
+
+ADD ./api/gunicorn.conf.py gunicorn.conf.py
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.wsgi:app"]
