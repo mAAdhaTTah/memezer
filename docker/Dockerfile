@@ -14,6 +14,8 @@ COPY ./api/alembic alembic
 
 FROM node:14 as web_build
 
+ENV SKIP_PREFLIGHT_CHECK=true
+
 WORKDIR /app
 
 COPY ./web/package.json package.json
@@ -40,5 +42,7 @@ COPY --from=api_build /app/alembic ./alembic
 COPY --from=web_build /app/build ./build
 
 ADD ./api/gunicorn.conf.py gunicorn.conf.py
+
+EXPOSE 8080
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.wsgi:app"]

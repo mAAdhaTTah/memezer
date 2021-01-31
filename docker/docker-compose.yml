@@ -5,7 +5,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data/pgdata
     env_file:
-      - ./api/.env
+      - ../api/.env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
@@ -15,50 +15,51 @@ services:
     depends_on:
       - db
     env_file:
-      - ./api/.env
+      - ../api/.env
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./docker/Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     ports:
       - 8080:8080
     volumes:
-      - ./api:/app
-      - ./web/build:/app/build
-      - ./media:/media
+      - ../api:/app
+      - ../web/build:/app/build
+      - ../media:/media
 
   migrations:
     depends_on:
       - db
     env_file:
-      - ./api/.env
+      - ../api/.env
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./docker/Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     command: alembic upgrade head
     volumes:
-      - ./api:/app
-      - ./media:/media
+      - ../api:/app
+      - ../media:/media
 
   web:
     depends_on:
       - api
     env_file:
-      - ./web/.env
+      - ../web/.env
     environment:
       CHOKIDAR_USEPOLLING: 1
+      SKIP_PREFLIGHT_CHECK: "true"
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./docker/Dockerfile
       target: web_build
     command: npm start
     ports:
       - 3000:3000
     volumes:
-      - ./web:/app
+      - ../web:/app
 
 volumes:
   db:
