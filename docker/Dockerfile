@@ -12,10 +12,13 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ]; then pip install --no-cache-dir -r r
 COPY ./api/memezer memezer
 COPY ./api/alembic alembic
 
-FROM node:14 as web_build
+FROM node:14.15.4 as web_build
+
+ENV SKIP_PREFLIGHT_CHECK=true
 
 WORKDIR /app
 
+COPY ./web/tsconfig.json tsconfig.json
 COPY ./web/package.json package.json
 COPY ./web/package-lock.json package-lock.json
 
@@ -40,5 +43,7 @@ COPY --from=api_build /app/alembic ./alembic
 COPY --from=web_build /app/build ./build
 
 ADD ./api/gunicorn.conf.py gunicorn.conf.py
+
+EXPOSE 8080
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.wsgi:app"]

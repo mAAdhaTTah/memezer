@@ -1,0 +1,8 @@
+__pycache__
+.mypycache
+.pytest_cache
+.vscode
+media
+docker
+web/build
+web/node_modules
