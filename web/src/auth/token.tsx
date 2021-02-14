@@ -12,12 +12,14 @@ export type AuthApi = {
     password: string,
     confirm: string
   ): Promise<void>;
+  logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthApi>({
   token: "",
   async login() {},
   async register() {},
+  async logout() {},
 });
 
 export const useAuth = (): AuthApi => useContext(AuthContext);
@@ -70,6 +72,9 @@ export const AuthProvider: React.FC = ({ children }) => {
         if (!response.ok) {
           throw new Error("Oh no!");
         }
+      },
+      async logout() {
+        setToken("");
       },
     };
   }, [setToken, token]);
