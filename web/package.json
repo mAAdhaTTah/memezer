@@ -22,6 +22,7 @@
     "axios": "^0.21.1",
     "material-ui-dropzone": "^3.5.0",
     "miragejs": "^0.1.41",
+    "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.14.2",
@@ -38,9 +39,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "npm run test:unit",
+    "test": "npm run test:check && npm run test:unit",
+    "test:check": "prettier --check \"{.storybook,src}/**/*.{js,ts,tsx}\"",
     "test:unit": "react-scripts test",
     "eject": "react-scripts eject",
+    "format": "prettier --write \"{.storybook,src}/**/*.{js,ts,tsx}\"",
     "storybook:start": "start-storybook -p 6006 -s public",
     "storybook:build": "build-storybook -s public"
   },
