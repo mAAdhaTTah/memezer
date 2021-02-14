@@ -1,8 +1,10 @@
+import { useLayoutEffect, useMemo } from "react";
 import { addDecorator } from "@storybook/react";
 import { makeDecorator } from "@storybook/addons";
 import withRouter from "storybook-react-router";
 import { action } from "@storybook/addon-actions";
 import { AuthContext } from "../src/auth/token";
+import { createMockServer } from "../src/testing";
 import { SwrConfigProvider } from "../src/api/config";
 import { ClientProvider } from "../src/api/client";
 import { cache } from "swr";
@@ -11,16 +13,32 @@ export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
 };
 
+const withMirageServer = makeDecorator({
+  name: "withMirageServer",
+  parameterName: "mirage",
+  wrapper: (storyFn, context, { parameters }) => {
+    useLayoutEffect(() => {
+      const server = createMockServer();
+      parameters?.modify?.(server);
+
+      return () => {
+        server.shutdown();
+        cache.clear();
+      };
+    }, []);
+
+    return storyFn(context);
+  },
+});
 
 const withApiConfig = makeDecorator({
   name: "withApiConfig",
   wrapper: (storyFn, context) => {
-    useEffect(() => {
-      return () => cache.clear();
-    });
     return (
       <ClientProvider>
-        <SwrConfigProvider>{storyFn(context)}</SwrConfigProvider>
+        <SwrConfigProvider config={{ dedupingInterval: 0 }}>
+          {storyFn(context)}
+        </SwrConfigProvider>
       </ClientProvider>
     );
   },
@@ -47,6 +65,7 @@ const withUser = makeDecorator({
   },
 });
 
+addDecorator(withMirageServer());
 addDecorator(withApiConfig());
 addDecorator(withUser());
 addDecorator(withRouter());

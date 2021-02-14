@@ -1,15 +1,8 @@
 import { waitFor } from "@testing-library/react";
-import { renderHook as tlRenderHook } from "@testing-library/react-hooks";
-import { createServer, Server, Response } from "miragejs";
+import { Response } from "miragejs";
 import { object, boolean, StructError } from "superstruct";
-import { cache } from "swr";
-import { AppProvider } from "../app";
+import { renderHook } from "../testing";
 import { useApiResult } from "./useApiResult";
-
-const renderHook = <P, R>(cb: (props: P) => R) =>
-  tlRenderHook<P, R>(cb, {
-    wrapper: AppProvider,
-  });
 
 const ResponseModel = object({
   success: boolean(),
@@ -18,25 +11,10 @@ const ResponseModel = object({
 const DUMMY_API = "/api/test";
 
 describe("useApiResult", () => {
-  let server: Server;
-
-  beforeEach(() => {
-    server = createServer({
-      environment: "test",
-      routes() {
-        this.get(DUMMY_API, () => ({
-          success: true,
-        }));
-      },
-    });
-  });
-
-  afterEach(async () => {
-    server?.shutdown();
-    await waitFor(() => cache.clear());
-  });
-
   it("should transition from loading -> success on successful API call", async () => {
+    server.get(DUMMY_API, () => ({
+      success: true,
+    }));
     const { result } = renderHook(() => useApiResult(DUMMY_API, ResponseModel));
 
     expect(result.current).toEqual({
