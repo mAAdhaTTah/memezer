@@ -11,5 +11,5 @@ passlib==1.7.4
 bcrypt==3.2.0
 requests==2.25.1
 python_jose==3.2.0
-cryptography==3.3.1
+cryptography==3.3.2
 python-multipart==0.0.5
