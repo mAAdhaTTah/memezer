@@ -30,7 +30,7 @@
     "react-use-localstorage": "^3.5.3",
     "storybook-react-router": "^1.0.8",
     "superstruct": "^0.14.0",
-    "swr": "^0.4.1",
+    "swr": "^0.4.2",
     "typescript": "^4.1.5",
     "variant": "^2.0.2"
   },
