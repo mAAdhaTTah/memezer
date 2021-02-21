@@ -2,7 +2,8 @@ import { waitFor } from "@testing-library/react";
 import { Response } from "miragejs";
 import { object, boolean, StructError } from "superstruct";
 import { shared } from "../config";
-import { renderHook } from "../testing";
+import { renderHook } from "../testing/render";
+import { setupServerInTests } from "../testing/server";
 import { useApiResult } from "./useApiResult";
 
 const ResponseModel = object({
@@ -13,6 +14,8 @@ const DUMMY_ROUTE = "/dummy";
 const DUMMY_KEY = shared.API_BASE + DUMMY_ROUTE;
 
 describe("useApiResult", () => {
+  setupServerInTests();
+
   it("should transition from loading -> success on successful API call", async () => {
     server.get(DUMMY_ROUTE, () => ({
       success: true,

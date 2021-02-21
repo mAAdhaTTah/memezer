@@ -1,8 +1,10 @@
 import { waitFor } from "@testing-library/react";
-import { renderHook } from "../testing";
+import { renderHook, setupServerInTests } from "../testing";
 import { useMemes } from "./useMemes";
 
 describe("useMemes", () => {
+  setupServerInTests();
+
   it("should fetch an empty list of memes", async () => {
     const { result } = renderHook(() => useMemes());
 
