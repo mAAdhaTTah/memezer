@@ -2,7 +2,7 @@ pytest==6.2.2
 rope==0.18.0
 flake8==3.8.4
 autoflake==1.4
-mypy==0.800
+mypy==0.812
 sqlalchemy_stubs==0.4
 flake8_isort==4.0.0
 isort==5.7.0
