@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, validator
 
 
@@ -13,7 +15,7 @@ class UserBase(BaseModel):
 
 
 class UserView(UserBase):
-    pass
+    id: UUID
 
     class Config:
         orm_mode = True
