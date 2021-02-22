@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -10,6 +11,7 @@ class MemeBase(BaseModel):
 
 class MemeView(MemeBase):
     title: str
+    uploaded_at: datetime
 
     class Config:
         orm_mode = True

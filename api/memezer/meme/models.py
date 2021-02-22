@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, List
 
 from fastapi import UploadFile
-from sqlalchemy import Column, ForeignKey, String
+from sqlalchemy import Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
@@ -37,6 +38,7 @@ class Meme(Base):
         default=lambda ctx: ctx.current_parameters.get("filename"),
     )
     filename = Column(String, nullable=False)
+    uploaded_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
 
     uploader = relationship("User", back_populates="uploads")
 
