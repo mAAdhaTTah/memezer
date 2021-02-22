@@ -1,7 +1,7 @@
 import { Switch, Route } from "react-router-dom";
 import { Login, Register, LOGIN, REGISTER } from "../auth";
 import { Upload, UPLOAD } from "../upload";
-import { Home, HOME } from "../home";
+import { View as HomeView, HOME } from "../home";
 import { NotFound } from "../errors";
 
 export const Page: React.FC = () => {
@@ -17,7 +17,7 @@ export const Page: React.FC = () => {
         <Upload />
       </Route>
       <Route exact path={HOME}>
-        <Home />
+        <HomeView />
       </Route>
       <Route>
         <NotFound />

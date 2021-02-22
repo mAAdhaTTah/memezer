@@ -4,7 +4,7 @@ import { makeDecorator } from "@storybook/addons";
 import withRouter from "storybook-react-router";
 import { action } from "@storybook/addon-actions";
 import { AuthContext } from "../src/auth/token";
-import { createMockServer } from "../src/testing";
+import { createMockServer } from "../src/testing/server";
 import { SwrConfigProvider } from "../src/api/config";
 import { ClientProvider } from "../src/api/client";
 import { cache } from "swr";
@@ -25,7 +25,7 @@ const withMirageServer = makeDecorator({
         server.shutdown();
         cache.clear();
       };
-    }, []);
+    }, [parameters?.modify]);
 
     return storyFn(context);
   },

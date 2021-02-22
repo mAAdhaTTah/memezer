@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
     "@storybook/addon-essentials": "^6.1.18",
     "@storybook/addon-storyshots": "^6.1.18",
     "@storybook/addons": "^6.1.18",
@@ -47,6 +48,11 @@
     "storybook:build": "build-storybook -s public"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.stories.{js,jsx,ts,tsx}",
+      "!src/testing/**"
+    ],
     "moduleNameMapper": {
       "^react-use-localstorage$": "<rootDir>/node_modules/react-use-localstorage/dist/react-use-localstorage.cjs.development.js"
     }
