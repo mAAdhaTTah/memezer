@@ -21,7 +21,11 @@ def test_should_create_new_user(client: TestClient, db: Session) -> None:
     user = User.get_by_email(db, email)
 
     assert user is not None
-    assert response.json() == {"username": user.username, "email": user.email}
+    assert response.json() == {
+        "id": str(user.id),
+        "username": user.username,
+        "email": user.email,
+    }
 
 
 def test_should_not_create_new_user_if_password_missing(
@@ -56,7 +60,11 @@ def test_should_return_current_user(authed_client: TestClient, user: User) -> No
     response = authed_client.get("/api/users/me")
 
     assert response.status_code == 200
-    assert response.json() == {"username": user.username, "email": user.email}
+    assert response.json() == {
+        "id": str(user.id),
+        "username": user.username,
+        "email": user.email,
+    }
 
 
 # TODO: we get correct error codes for various header errors

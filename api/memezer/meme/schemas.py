@@ -10,6 +10,7 @@ class MemeBase(BaseModel):
 
 
 class MemeView(MemeBase):
+    id: UUID
     title: str
     uploaded_at: datetime
 
@@ -20,3 +21,9 @@ class MemeView(MemeBase):
 class MemeCreate(MemeBase):
     uploader_id: UUID
     title: Optional[str] = None
+
+    def to_orm(self) -> dict:
+        model = self.dict()
+        model.update({"uploader_id": str(model["uploader_id"])})
+
+        return model

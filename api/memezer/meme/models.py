@@ -48,11 +48,7 @@ class Meme(Base):
 
     @staticmethod
     def create_meme(db: Session, *, meme: MemeCreate) -> Meme:
-        meme_data = meme.dict()
-        # TODO UUID -> str cast built-in somewhere?
-        meme_data.update({"uploader_id": str(meme_data["uploader_id"])})
-
-        db_meme = Meme(**meme_data)
+        db_meme = Meme(**meme.to_orm())
         db.add(db_meme)
         db.commit()
         db.refresh(db_meme)

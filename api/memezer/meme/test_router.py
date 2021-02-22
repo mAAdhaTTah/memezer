@@ -21,6 +21,7 @@ def test_should_return_authed_users_memes(
     assert response.status_code == 200
     assert response.json() == [
         {
+            "id": str(meme.id),
             "filename": meme.filename,
             "title": meme.title,
             "uploaded_at": jsonable_encoder(meme.uploaded_at),
@@ -44,6 +45,7 @@ def test_should_create_meme(
 
     assert response.status_code == 201
     assert response.json() == {
+        "id": str(meme.id),
         "filename": "trollface.png",
         "title": "trollface.png",
         "uploaded_at": jsonable_encoder(meme.uploaded_at),
