@@ -1,2 +1,2 @@
-export { Home } from "./Home";
+export { View } from "./View";
 export * from "./routes";

@@ -1,4 +1,4 @@
-import { array, object, string } from "superstruct";
+import { array, Infer, object, string } from "superstruct";
 
 export const MemeView = object({
   id: string(),
@@ -7,3 +7,6 @@ export const MemeView = object({
 });
 
 export const MemeListView = array(MemeView);
+
+// eslint-disable-next-line
+export type MemeListView = Infer<typeof MemeListView>;

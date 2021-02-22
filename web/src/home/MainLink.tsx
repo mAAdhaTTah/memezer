@@ -1,12 +1,21 @@
 import React, { forwardRef } from "react";
-import { Link as LinkUi } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Button } from "@material-ui/core";
 
 export const MainLink: React.ForwardRefExoticComponent<{
-  href: string;
-}> = forwardRef(({ children, href }, ref) => {
+  to: string;
+  children: React.ReactNode;
+}> = forwardRef(({ children, to }, ref) => {
   return (
-    <LinkUi innerRef={ref} href={href} variant="body2" color="secondary">
+    <Button
+      innerRef={ref}
+      to={to}
+      color="primary"
+      component={Link}
+      variant="contained"
+      size="large"
+    >
       {children}
-    </LinkUi>
+    </Button>
   );
 });

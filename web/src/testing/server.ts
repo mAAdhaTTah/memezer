@@ -1,4 +1,5 @@
 import { createServer, Factory, Model, RestSerializer } from "miragejs";
+import { act } from "react-dom/test-utils";
 import { cache } from "swr";
 import { shared } from "../config";
 
@@ -65,6 +66,8 @@ export const setupServerInTests = () => {
 
   afterEach(async () => {
     server.shutdown();
-    await cache.clear();
+    await act(async () => {
+      await cache.clear();
+    });
   });
 };
