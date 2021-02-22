@@ -1,7 +1,12 @@
 import { createServer, Factory, Model, RestSerializer } from "miragejs";
+import { cache } from "swr";
 import { shared } from "../config";
 
-export const createMockServer = ({ environment = "development" }) =>
+declare global {
+  const server: ReturnType<typeof createMockServer>;
+}
+
+export const createMockServer = ({ environment = "development" } = {}) =>
   createServer({
     environment,
     urlPrefix: shared.API_BASE,
@@ -52,3 +57,14 @@ export const createMockServer = ({ environment = "development" }) =>
       });
     },
   });
+
+export const setupServerInTests = () => {
+  beforeEach(() => {
+    createMockServer({ environment: "test" });
+  });
+
+  afterEach(async () => {
+    server.shutdown();
+    await cache.clear();
+  });
+};
