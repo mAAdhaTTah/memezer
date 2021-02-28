@@ -1,7 +1,7 @@
 import { createServer, Factory, Model, RestSerializer } from "miragejs";
 import { act } from "react-dom/test-utils";
 import { cache } from "swr";
-import { fromUnixTime } from "date-fns";
+import { formatISO } from "date-fns";
 import { shared } from "../config";
 
 declare global {
@@ -33,7 +33,7 @@ export const createMockServer = ({ environment = "development" } = {}) =>
         },
 
         uploaded_at() {
-          return fromUnixTime(Date.now());
+          return formatISO(new Date());
         },
 
         filename(i: number) {
@@ -65,12 +65,32 @@ export const createMockServer = ({ environment = "development" } = {}) =>
       this.get("/memes", (schema) => {
         return schema.all("meme").models;
       });
+
+      this.post("/memes", (schema, request) => {
+        // This comes through as FormData.
+        const formBody = (request.requestBody as unknown) as FormData;
+        const file = formBody.get("file");
+        if (!(file instanceof File)) {
+          throw new Error("file should be a File");
+        }
+        const filename = file.name;
+
+        // TODO(mAAdhaTTah) this seems like a bug or something I'm doing wrong?
+        const meme = (this as any).build("meme");
+        meme.title = filename;
+        meme.filename = filename;
+        const dbMeme = schema.create("meme", meme);
+        meme.id = dbMeme.id;
+
+        return meme;
+      });
     },
   });
 
 export const setupServerInTests = () => {
   beforeEach(() => {
     createMockServer({ environment: "test" });
+    (server as any).loadFactories();
   });
 
   afterEach(async () => {

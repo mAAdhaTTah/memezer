@@ -3,6 +3,7 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
 import { DropzoneArea } from "material-ui-dropzone";
 import { useAuth } from "../auth";
+import { useMemes } from "../memes";
 
 export const Upload: React.FC = () => {
   const history = useHistory();
@@ -11,13 +12,13 @@ export const Upload: React.FC = () => {
     handleSubmit,
     control,
     formState: { isSubmitting, isValid },
-    trigger,
-  } = useForm({
+  } = useForm<{ file: null | File }>({
     defaultValues: {
-      files: [],
+      file: null,
     },
     mode: "onChange",
   });
+  const { uploadMeme } = useMemes();
 
   if (!token) {
     return <Redirect to="/" />;
@@ -33,29 +34,15 @@ export const Upload: React.FC = () => {
         container
         direction="column"
         onSubmit={handleSubmit(async (data) => {
-          const formData = new FormData();
-          formData.append("file", data.files[0]);
-          const response = await fetch(
-            `${process.env.REACT_APP_API_BASE}/memes`,
-            {
-              method: "POST",
-              body: formData,
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (response.ok) {
-            history.push("/");
-          }
+          await uploadMeme(data.file!);
+          history.push("/");
         })}
       >
         <Controller
-          name="files"
+          name="file"
           control={control}
           rules={{
-            validate: (files) => files.length === 1,
+            required: true,
           }}
           render={({ onChange }) => {
             return (
@@ -63,8 +50,7 @@ export const Upload: React.FC = () => {
                 filesLimit={1}
                 acceptedFiles={["image/jpeg", "image/png", "image/bmp"]}
                 onChange={(files) => {
-                  onChange(files);
-                  trigger("files");
+                  onChange(files[0]);
                 }}
               />
             );

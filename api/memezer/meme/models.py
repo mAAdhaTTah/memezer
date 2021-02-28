@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List
 
 from fastapi import UploadFile
-from sqlalchemy import Column, DateTime, ForeignKey, String
+from sqlalchemy import Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, relationship
 
 from ..core.db import Base
@@ -17,6 +18,7 @@ from ..core.settings import settings
 if TYPE_CHECKING:
     from ..user.models import User  # noqa: F401
 
+from .errors import DuplicateFilenameException
 from .schemas import MemeCreate
 
 
@@ -42,6 +44,10 @@ class Meme(Base):
 
     uploader = relationship("User", back_populates="uploads")
 
+    __table_args__ = (
+        UniqueConstraint("filename", "uploader_id", name="_uploader_filename_uc"),
+    )
+
     @staticmethod
     def get_memes_from_uploader_id(db: Session, uploader_id: uuid.UUID) -> List[Meme]:
         return db.query(Meme).filter(Meme.uploader_id == str(uploader_id)).all()
@@ -59,12 +65,15 @@ class Meme(Base):
     async def create_meme_from_upload_file(
         db: Session, uploader_id: uuid.UUID, file: UploadFile
     ) -> Meme:
-        db_meme = Meme.create_meme(
-            db, meme=MemeCreate(uploader_id=uploader_id, filename=file.filename)
-        )
-        await save_file(db_meme.file_path, file)
+        try:
+            db_meme = Meme.create_meme(
+                db, meme=MemeCreate(uploader_id=uploader_id, filename=file.filename)
+            )
+            await save_file(db_meme.file_path, file)
 
-        return db_meme
+            return db_meme
+        except IntegrityError:
+            raise DuplicateFilenameException(file.filename)
 
     @property
     def file_path(self) -> Path:

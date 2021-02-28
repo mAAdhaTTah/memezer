@@ -22,11 +22,11 @@ describe("useApiResult", () => {
     }));
     const { result } = renderHook(() => useApiResult(DUMMY_KEY, ResponseModel));
 
-    expect(result.current).toEqual({
+    expect(result.current.result).toEqual({
       type: "loading",
     });
     await waitFor(() =>
-      expect(result.current).toEqual({
+      expect(result.current.result).toEqual({
         type: "success",
         data: {
           success: true,
@@ -44,7 +44,7 @@ describe("useApiResult", () => {
     const { result } = renderHook(() => useApiResult(DUMMY_KEY, ResponseModel));
 
     await waitFor(() =>
-      expect(result.current).toEqual({
+      expect(result.current.result).toEqual({
         type: "error",
         error: expect.objectContaining({
           isAxiosError: true,
@@ -61,10 +61,12 @@ describe("useApiResult", () => {
     const { result } = renderHook(() => useApiResult(DUMMY_KEY, ResponseModel));
 
     await waitFor(() =>
-      expect(result.current).toEqual({
+      expect(result.current.result).toEqual({
         type: "error",
         error: expect.any(StructError),
       })
     );
   });
+
+  it.todo("should mutate the bound key of the result");
 });
