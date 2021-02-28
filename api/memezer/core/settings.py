@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from pydantic import BaseSettings, DirectoryPath, PostgresDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, DirectoryPath, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
@@ -28,6 +28,18 @@ class Settings(BaseSettings):
     MEDIA_PATH: DirectoryPath
 
     ENABLE_CORS: bool = False
+
+    DOMAIN: str = "localhost:8080"
+    SSL: bool = False
+    MEDIA_SUBPATH: str = "media"
+    MEDIA_URL: Optional[AnyHttpUrl] = None
+
+    @validator("MEDIA_URL", pre=True)
+    def default_media_ur(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        if isinstance(v, str):
+            return v
+        protocol = "https" if values["SSL"] else "http"
+        return f"{protocol}://{values['DOMAIN']}/{values['MEDIA_SUBPATH']}"
 
     class Config:
         case_sensitive = True
