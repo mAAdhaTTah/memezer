@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import AnyHttpUrl, BaseModel
 
 
 class MemeBase(BaseModel):
@@ -13,6 +13,8 @@ class MemeView(MemeBase):
     id: UUID
     title: str
     uploaded_at: datetime
+    filename: str
+    file_url: AnyHttpUrl
 
     class Config:
         orm_mode = True

@@ -37,4 +37,9 @@ build_path = app_path / "build"
 if not build_path.exists():
     build_path.mkdir()
 
+app.mount(
+    f"/{settings.MEDIA_SUBPATH}",
+    StaticFiles(directory=str(settings.MEDIA_PATH), html=True),
+    name="media",
+)
 app.mount("/", StaticFiles(directory=str(build_path), html=True), name="build")
