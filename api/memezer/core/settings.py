@@ -27,6 +27,8 @@ class Settings(BaseSettings):
 
     MEDIA_PATH: DirectoryPath
 
+    ENABLE_CORS: bool = False
+
     class Config:
         case_sensitive = True
 
