@@ -14,7 +14,7 @@ export const useApiResult = <T, S>(
 
   const result = useMemo(() => {
     if (data) {
-      const result = validate(data, struct);
+      const result = validate(data, struct, { coerce: true });
 
       if (result[0] != null) {
         return AsyncStatus.error({ error: result[0] });
