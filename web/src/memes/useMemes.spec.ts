@@ -32,6 +32,8 @@ describe("useMemes", () => {
               id: meme.id,
               title: meme.title,
               filename: meme.filename,
+              file_url: meme.file_url,
+              uploaded_at: meme.uploaded_at,
             },
           ],
         },

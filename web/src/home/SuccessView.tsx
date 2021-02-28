@@ -36,7 +36,7 @@ export const SuccessView: React.FC<{ memes: MemeListView }> = ({ memes }) => {
       {memes.map((meme) => (
         <Grid key={meme.id} item xs={6} md={4}>
           <Card>
-            <CardMedia image={meme.filename} className={classes.media} />
+            <CardMedia image={meme.file_url} className={classes.media} />
             <CardContent>
               <Typography component="h3" variant="h4">
                 {meme.title}

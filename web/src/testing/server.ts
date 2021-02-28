@@ -1,6 +1,7 @@
 import { createServer, Factory, Model, RestSerializer } from "miragejs";
 import { act } from "react-dom/test-utils";
 import { cache } from "swr";
+import { fromUnixTime } from "date-fns";
 import { shared } from "../config";
 
 declare global {
@@ -31,7 +32,15 @@ export const createMockServer = ({ environment = "development" } = {}) =>
           return `Meme ${i}`;
         },
 
-        filename: "https://via.placeholder.com/400x600",
+        uploaded_at() {
+          return fromUnixTime(Date.now());
+        },
+
+        filename(i: number) {
+          return `meme-${i}.jpg`;
+        },
+
+        file_url: "https://via.placeholder.com/400x600",
       }),
     },
 

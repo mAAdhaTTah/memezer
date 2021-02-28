@@ -21,6 +21,7 @@
     "@types/react-dom": "^17.0.1",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
+    "date-fns": "^2.17.0",
     "material-ui-dropzone": "^3.5.0",
     "miragejs": "^0.1.41",
     "prettier": "^2.2.1",
