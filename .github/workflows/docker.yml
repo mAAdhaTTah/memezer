@@ -56,16 +56,7 @@ jobs:
         with:
           wait-on: "http://localhost:8080"
           working-directory: ./docker/e2e
-          start: |
-            docker run -d \
-              -p 8080:8080 \
-              -e POSTGRES_SERVER \
-              -e POSTGRES_USER \
-              -e POSTGRES_DB \
-              -e POSTGRES_PASSWORD \
-              -e JWT_SECRET_KEY \
-              -e MEDIA_PATH \
-              maadhattah/memezer:e2e
+          start: docker run -d -p 8080:8080 -e POSTGRES_SERVER -e POSTGRES_USER -e POSTGRES_DB -e POSTGRES_PASSWORD -e JWT_SECRET_KEY -e MEDIA_PATH maadhattah/memezer:e2e
         env:
           POSTGRES_SERVER: localhost
           POSTGRES_USER: memezer
