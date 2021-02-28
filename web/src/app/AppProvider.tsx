@@ -6,9 +6,9 @@ export const AppProvider: React.FC = ({ children }) => {
   return (
     <HashRouter>
       <AuthProvider>
-        <SwrConfigProvider>
-          <ClientProvider>{children}</ClientProvider>
-        </SwrConfigProvider>
+        <ClientProvider>
+          <SwrConfigProvider>{children}</SwrConfigProvider>
+        </ClientProvider>
       </AuthProvider>
     </HashRouter>
   );
