@@ -68,4 +68,6 @@ class Meme(Base):
 
     @property
     def file_path(self) -> Path:
-        return settings.MEDIA_PATH / str(self.uploader_id) / self.filename
+        return Path(
+            f"{str(settings.MEDIA_PATH)}/{str(self.uploader_id)}/{self.filename}"
+        )
