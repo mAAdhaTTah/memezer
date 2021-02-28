@@ -57,3 +57,13 @@ def test_should_create_meme(
     }
 
     assert path.exists(f"{settings.MEDIA_PATH}/{str(user.id)}/trollface.png")
+
+
+def test_should_not_create_meme_with_shared_filename(
+    authed_client: TestClient, meme_file: IO, meme: Meme
+) -> None:
+    response = authed_client.post(
+        "/api/memes", files={"file": (meme.filename, meme_file, "image/png")}
+    )
+
+    assert response.status_code == 409

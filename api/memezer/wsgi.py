@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .auth.router import router as auth_router
+from .core.errors import register_error_handlers
 from .core.settings import settings
 from .meme.router import router as meme_router
 from .user.router import router as user_router
@@ -43,3 +44,5 @@ app.mount(
     name="media",
 )
 app.mount("/", StaticFiles(directory=str(build_path), html=True), name="build")
+
+register_error_handlers(app)
