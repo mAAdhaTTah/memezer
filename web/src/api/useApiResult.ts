@@ -1,15 +1,17 @@
 import { AxiosError } from "axios";
 import { useMemo } from "react";
 import { Struct, StructError, validate } from "superstruct";
-import useSwr from "swr";
+import useSwr, { mutate } from "swr";
 import { AsyncStatus } from "./async";
 
 export type ApiError = StructError | AxiosError;
 
+type MutateCallback<T> = (data: T) => Promise<T>;
+
 export const useApiResult = <T, S>(
   url: string,
   struct: Struct<T, S>
-): AsyncStatus<T, ApiError> => {
+): { result: AsyncStatus<T, ApiError>; mutate: MutateCallback<T> } => {
   const { data, error } = useSwr<unknown, AxiosError>(url);
 
   const result = useMemo(() => {
@@ -30,5 +32,5 @@ export const useApiResult = <T, S>(
     return AsyncStatus.loading();
   }, [data, error, struct]);
 
-  return result;
+  return { result, mutate: (data: T) => mutate(url, data) };
 };
