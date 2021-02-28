@@ -6,9 +6,11 @@ export const TestProvider: React.FC = ({ children }) => {
   return (
     <HashRouter>
       <AuthProvider>
-        <SwrConfigProvider config={{ dedupingInterval: 0 }}>
-          <ClientProvider>{children}</ClientProvider>
-        </SwrConfigProvider>
+        <ClientProvider>
+          <SwrConfigProvider config={{ dedupingInterval: 0 }}>
+            {children}
+          </SwrConfigProvider>
+        </ClientProvider>
       </AuthProvider>
     </HashRouter>
   );
