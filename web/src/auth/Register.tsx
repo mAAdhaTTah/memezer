@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "./token";
+import { LOGIN } from "./routes";
 
 export const Register: React.FC = () => {
   const history = useHistory();
@@ -46,7 +47,7 @@ export const Register: React.FC = () => {
               data.password,
               data.confirm
             );
-            history.push("/login");
+            history.push(LOGIN);
           } catch (err) {}
         })}
       >
