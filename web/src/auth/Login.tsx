@@ -9,11 +9,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
+import { HOME } from "../home/routes";
 import { useAuth } from "./token";
 
 export const Login: React.FC = () => {
   const history = useHistory();
-  const user = useAuth();
+  const auth = useAuth();
   const {
     handleSubmit,
     control,
@@ -37,10 +38,8 @@ export const Login: React.FC = () => {
         container
         direction="column"
         onSubmit={handleSubmit(async (data) => {
-          try {
-            await user.login(data.username, data.password);
-            history.push("/");
-          } catch (err) {}
+          await auth.login(data.username, data.password);
+          history.push(HOME);
         })}
       >
         <Box mb={2}>

@@ -1,9 +1,6 @@
-import Chance from "chance";
 import { act } from "@testing-library/react-hooks/dom";
-import { renderHook, setupServerInTests } from "../testing";
+import { chance, renderHook, setupServerInTests } from "../testing";
 import { useMemes } from "./useMemes";
-
-const chance = new Chance();
 
 describe("useMemes", () => {
   setupServerInTests();
