@@ -6,10 +6,10 @@ import { render, setupServerInTests } from "../testing";
 import { View } from "./View";
 
 jest.mock("../auth", () => {
-  const auth = jest.requireActual("../auth");
+  const module = jest.requireActual("../auth");
   return {
-    ...auth,
-    useAuth: jest.fn(auth.useAuth),
+    ...module,
+    useAuth: jest.fn(module.useAuth),
   };
 });
 
@@ -18,7 +18,7 @@ describe("home#View", () => {
 
   it("should show the logged out view with no token", () => {
     (useAuth as jest.Mock).mockReturnValue({
-      token: null,
+      token: "",
     });
     const { getByTestId } = render(<View />);
 
