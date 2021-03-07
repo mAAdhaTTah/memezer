@@ -47,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: Dockerfile
           tags: maadhattah/memezer:e2e
           push: false
           load: true
@@ -55,7 +55,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           wait-on: "http://localhost:8080"
-          working-directory: ./docker/e2e
+          working-directory: ./e2e
           start: docker run -d -p 8080:8080 -e POSTGRES_SERVER -e POSTGRES_USER -e POSTGRES_DB -e POSTGRES_PASSWORD -e JWT_SECRET_KEY -e MEDIA_PATH maadhattah/memezer:e2e
         env:
           POSTGRES_SERVER: localhost
@@ -81,7 +81,7 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: Dockerfile
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta.outputs.tags }}
