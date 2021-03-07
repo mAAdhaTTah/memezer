@@ -3,22 +3,24 @@ import { addDecorator } from "@storybook/react";
 import { makeDecorator } from "@storybook/addons";
 import withRouter from "storybook-react-router";
 import { action } from "@storybook/addon-actions";
-import { AuthContext } from "../src/auth/token";
 import { createMockServer } from "../src/testing/server";
 import { SwrConfigProvider } from "../src/api/config";
-import { ClientProvider } from "../src/api/client";
+import { ClientContext } from "../src/api/client";
 import { cache } from "swr";
+import axios from "axios";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
 };
+
+const API_BASE = "http://api.memezer.test";
 
 const withMirageServer = makeDecorator({
   name: "withMirageServer",
   parameterName: "mirage",
   wrapper: (storyFn, context, { parameters }) => {
     useLayoutEffect(() => {
-      const server = createMockServer();
+      const server = createMockServer({ baseURL: API_BASE });
       parameters?.modify?.(server);
 
       return () => {
@@ -31,41 +33,31 @@ const withMirageServer = makeDecorator({
   },
 });
 
-const withApiConfig = makeDecorator({
-  name: "withApiConfig",
+const withClientConfig = makeDecorator({
+  name: "withClientConfig",
+  parameterName: "client",
   wrapper: (storyFn, context) => {
-    return (
-      <ClientProvider>
-        <SwrConfigProvider config={{ dedupingInterval: 0 }}>
-          {storyFn(context)}
-        </SwrConfigProvider>
-      </ClientProvider>
-    );
-  },
-});
-
-const withUser = makeDecorator({
-  name: "withUser",
-  parameterName: "user",
-  wrapper: (storyFn, context, { parameters }) => {
-    const api = useMemo(
+    const client = useMemo(
       () => ({
         token: parameters?.status === "logged-in" ? "faketoken" : null,
         login: action("user#login"),
         register: action("user#register"),
+        api: axios.create({
+          baseURL: API_BASE,
+        }),
       }),
       [parameters?.status]
     );
-
     return (
-      <AuthContext.Provider value={api}>
-        {storyFn(context)}
-      </AuthContext.Provider>
+      <ClientContext.Provider value={client}>
+        <SwrConfigProvider config={{ dedupingInterval: 0 }}>
+          {storyFn(context)}
+        </SwrConfigProvider>
+      </ClientContext.Provider>
     );
   },
 });
 
 addDecorator(withMirageServer());
-addDecorator(withApiConfig());
-addDecorator(withUser());
+addDecorator(withClientConfig());
 addDecorator(withRouter());

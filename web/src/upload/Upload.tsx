@@ -2,12 +2,12 @@ import { useHistory, Redirect } from "react-router-dom";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
 import { DropzoneArea } from "material-ui-dropzone";
-import { useAuth } from "../auth";
+import { useClient } from "../api";
 import { useMemes } from "../memes";
 
 export const Upload: React.FC = () => {
   const history = useHistory();
-  const { token } = useAuth();
+  const { isAuthenticated } = useClient();
   const {
     handleSubmit,
     control,
@@ -20,7 +20,7 @@ export const Upload: React.FC = () => {
   });
   const { uploadMeme } = useMemes();
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Redirect to="/" />;
   }
 

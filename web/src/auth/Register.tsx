@@ -9,17 +9,18 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth } from "./token";
-import { LOGIN } from "./routes";
+import { useClient } from "../api";
+import { HOME } from "../home";
 
 export const Register: React.FC = () => {
   const history = useHistory();
-  const user = useAuth();
+  const client = useClient();
   const {
     handleSubmit,
     control,
     errors,
-    formState: { isSubmitting, isValid },
+    watch,
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
       username: "",
@@ -27,7 +28,6 @@ export const Register: React.FC = () => {
       password: "",
       confirm: "",
     },
-    mode: "onChange",
   });
 
   return (
@@ -40,15 +40,13 @@ export const Register: React.FC = () => {
         container
         direction="column"
         onSubmit={handleSubmit(async (data) => {
-          try {
-            await user.register(
-              data.username,
-              data.email,
-              data.password,
-              data.confirm
-            );
-            history.push(LOGIN);
-          } catch (err) {}
+          await client.register(
+            data.username,
+            data.email,
+            data.password,
+            data.confirm
+          );
+          history.push(HOME);
         })}
       >
         <Box mb={2}>
@@ -78,6 +76,7 @@ export const Register: React.FC = () => {
             control={control}
             rules={{
               required: true,
+              pattern: /^\S+@\S+$/,
             }}
             render={({ value, onChange }) => {
               return (
@@ -121,6 +120,9 @@ export const Register: React.FC = () => {
             control={control}
             rules={{
               required: true,
+              validate: {
+                matchPassword: (value) => value === watch("password"),
+              },
             }}
             render={({ value, onChange }) => {
               return (
@@ -141,7 +143,7 @@ export const Register: React.FC = () => {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={isSubmitting || !isValid}
+          disabled={isSubmitting}
         >
           Submit
         </Button>

@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from ..user.schemas import UserView
+
 
 class Token(BaseModel):
     access_token: str
@@ -12,3 +14,8 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     user_id: UUID
     expires: datetime
+
+
+class RegisterView(BaseModel):
+    user: UserView
+    token: Token

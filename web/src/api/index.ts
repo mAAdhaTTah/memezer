@@ -1,3 +1,4 @@
 export * from "./useApiResult";
 export { SwrConfigProvider } from "./config";
-export { useClient, ClientProvider } from "./client";
+export { ClientProvider, useClient } from "./client";
+export type { Client } from "./client";

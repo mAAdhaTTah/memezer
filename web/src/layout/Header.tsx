@@ -8,10 +8,11 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Person, Home } from "@material-ui/icons";
-import { LOGIN, useAuth } from "../auth";
+import { useClient } from "../api";
+import { LOGIN } from "../auth";
+import { HOME } from "../home";
 import { LoggedInMenu } from "./LoggedInMenu";
 import { HeaderLink } from "./links";
-import { HOME } from "../home";
 import { PaperContainer } from "./PaperContainer";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Header: React.FC = () => {
-  const { token } = useAuth();
+  const { isAuthenticated } = useClient();
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -64,7 +65,7 @@ export const Header: React.FC = () => {
           alignItems="center"
           className={classes.menu}
         >
-          {token ? (
+          {isAuthenticated ? (
             <>
               <Button
                 aria-controls="simple-menu"

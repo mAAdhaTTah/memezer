@@ -1,12 +1,12 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { App } from "./App";
-import { AppProvider } from "./AppProvider";
+import { TestProvider } from "../testing";
 
 describe("App", () => {
   it("should render main element", () => {
     render(<App />, {
-      wrapper: AppProvider,
+      wrapper: TestProvider,
     });
     const main = screen.getByRole("main");
     expect(main).toBeInTheDocument();

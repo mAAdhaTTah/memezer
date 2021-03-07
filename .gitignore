@@ -64,6 +64,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+e2e/videos/
+e2e/screenshots/
 
 # Translations
 *.mo

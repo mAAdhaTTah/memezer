@@ -9,9 +9,6 @@ ARG INSTALL_DEV=false
 COPY ./api/requirements.dev.txt requirements.dev.txt
 RUN bash -c "if [ $INSTALL_DEV == 'true' ]; then pip install --no-cache-dir -r requirements.dev.txt; fi"
 
-COPY ./api/memezer memezer
-COPY ./api/alembic alembic
-
 FROM node:14.15.4 as web_build
 
 ENV SKIP_PREFLIGHT_CHECK=true
@@ -38,11 +35,12 @@ COPY --from=api_build /usr/local/bin /usr/local/bin
 
 WORKDIR /app
 
-COPY --from=api_build /app/memezer ./memezer
-COPY --from=api_build /app/alembic ./alembic
 COPY --from=web_build /app/build ./build
 
-ADD ./api/gunicorn.conf.py gunicorn.conf.py
+COPY ./api/alembic.ini alembic.ini
+COPY ./api/memezer memezer
+COPY ./api/alembic alembic
+COPY ./api/gunicorn.conf.py gunicorn.conf.py
 
 EXPOSE 8080
 

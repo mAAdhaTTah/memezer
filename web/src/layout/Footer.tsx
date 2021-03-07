@@ -7,7 +7,8 @@ import {
 } from "@material-ui/core";
 import { CloudUpload, Person, Assignment } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
-import { LOGIN, REGISTER, useAuth } from "../auth";
+import { useClient } from "../api";
+import { LOGIN, REGISTER } from "../auth";
 import { UPLOAD } from "../upload";
 import { PaperContainer } from "./PaperContainer";
 
@@ -24,7 +25,7 @@ const useStyles = makeStyles({
 export const Footer: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const user = useAuth();
+  const client = useClient();
 
   return (
     <PaperContainer>
@@ -37,7 +38,7 @@ export const Footer: React.FC = () => {
           showLabels
           className={classes.navigation}
         >
-          {user.token ? (
+          {client.isAuthenticated ? (
             <BottomNavigationAction
               value={UPLOAD}
               label="Upload"
