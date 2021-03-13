@@ -8,10 +8,13 @@ declare global {
   const server: ReturnType<typeof createMockServer>;
 }
 
-export const createMockServer = ({ environment = "development" } = {}) =>
+export const createMockServer = ({
+  environment = "development",
+  urlPrefix = shared.API_BASE,
+} = {}) =>
   createServer({
     environment,
-    urlPrefix: shared.API_BASE,
+    urlPrefix,
 
     serializers: {
       application: RestSerializer,
@@ -47,7 +50,7 @@ export const createMockServer = ({ environment = "development" } = {}) =>
     seeds(server) {},
 
     routes() {
-      this.post("/users", (schema, request) => {
+      this.post("/auth/register", (schema, request) => {
         const body = JSON.parse(request.requestBody);
 
         return schema.db.user.insert(body);

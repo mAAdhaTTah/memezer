@@ -2,7 +2,7 @@ import { waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useHistory } from "react-router-dom";
 import { chance, Kit, setupServerInTests } from "../testing";
-import { useAuth } from "./token";
+import { useClient } from "../api";
 import { Login } from "./Login";
 import { HOME } from "../home";
 
@@ -20,17 +20,17 @@ const kit = Kit.create(Login, () => ({}))
     clickSubmit: () => userEvent.click(elems.submitBtn()),
   }))
   .setAsync((elems) => ({
-    submitBtnToBeEnabled: () =>
-      waitFor(() => expect(elems.submitBtn()).toBeEnabled()),
-    submitBtnToBeDisabled: () =>
-      waitFor(() => expect(elems.submitBtn()).toBeDisabled()),
+    usernameToBeError: () =>
+      waitFor(() => expect(elems.username()).toBeInvalid()),
+    passwordToBeError: () =>
+      waitFor(() => expect(elems.password()).toBeInvalid()),
   }));
 
-jest.mock("./token", () => {
-  const module = jest.requireActual("./token") as any;
+jest.mock("../api", () => {
+  const module = jest.requireActual("../api") as any;
   return {
     ...module,
-    useAuth: jest.fn(module.useAuth),
+    useClient: jest.fn(module.useClient),
   };
 });
 
@@ -49,37 +49,41 @@ describe("Login", () => {
   let mockHistory: any;
 
   beforeEach(() => {
-    mockAuthApi = {
-      token: "",
-      login: jest.fn(),
-      register: jest.fn(),
-      logout: jest.fn(),
-    };
-    (useAuth as jest.Mock).mockReturnValue(mockAuthApi);
+    (useClient as jest.Mock).mockReturnValue(
+      (mockAuthApi = {
+        isAuthenticated: false,
+        login: jest.fn(),
+        register: jest.fn(),
+        logout: jest.fn(),
+      })
+    );
 
-    mockHistory = {
-      push: jest.fn(),
-    };
-    (useHistory as jest.Mock).mockReturnValue(mockHistory);
+    (useHistory as jest.Mock).mockReturnValue(
+      (mockHistory = {
+        push: jest.fn(),
+      })
+    );
   });
 
-  it("should be disabled if password is empty", async () => {
-    const run = kit.run();
-
-    run.fire.typeUsername(chance.email());
-
-    await run.waitFor.submitBtnToBeDisabled();
-  });
-
-  it("should be disabled if username is empty", async () => {
+  it("should error if username is empty", async () => {
     const run = kit.run();
 
     run.fire.typePassword(chance.hash({ length: 15 }));
+    run.fire.clickSubmit();
 
-    await run.waitFor.submitBtnToBeDisabled();
+    await run.waitFor.usernameToBeError();
   });
 
-  it("should enabled & submit successfully if username & password is filled", async () => {
+  it("should show error if password is empty", async () => {
+    const run = kit.run();
+
+    run.fire.typeUsername(chance.email());
+    run.fire.clickSubmit();
+
+    await run.waitFor.passwordToBeError();
+  });
+
+  it("should submit successfully if username & password is filled", async () => {
     const run = kit.run();
 
     const username = chance.email();
@@ -87,16 +91,12 @@ describe("Login", () => {
 
     run.fire.typeUsername(username);
     run.fire.typePassword(password);
-
-    await run.waitFor.submitBtnToBeEnabled();
-
     run.fire.clickSubmit();
 
     await waitFor(() => expect(mockAuthApi.login).toHaveBeenCalledTimes(1));
     expect(mockAuthApi.login).toHaveBeenCalledWith(username, password);
 
-    const history = useHistory();
-    await waitFor(() => expect(history.push).toHaveBeenCalledTimes(1));
-    expect(history.push).toHaveBeenCalledWith(HOME);
+    await waitFor(() => expect(mockHistory.push).toHaveBeenCalledTimes(1));
+    expect(mockHistory.push).toHaveBeenCalledWith(HOME);
   });
 });

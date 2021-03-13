@@ -12,15 +12,14 @@ type AppConfig = ConfigInterface<
 export const SwrConfigProvider: React.FC<{
   config?: AppConfig;
 }> = ({ config = {}, children }) => {
-  const client = useClient();
+  const { api } = useClient();
 
   const value: AppConfig = useMemo(
     () => ({
-      fetcher: (url, params) =>
-        client.get(url, params).then((resp) => resp.data),
+      fetcher: (url, params) => api.get(url, params).then((resp) => resp.data),
       ...config,
     }),
-    [config, client]
+    [config, api]
   );
   return <SWRConfig value={value}>{children}</SWRConfig>;
 };

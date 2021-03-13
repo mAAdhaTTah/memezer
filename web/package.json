@@ -45,7 +45,7 @@
     "build": "react-scripts build",
     "test": "npm run test:check && npm run test:unit",
     "test:check": "prettier --check \"{.storybook,src}/**/*.{js,ts,tsx}\"",
-    "test:unit": "react-scripts test",
+    "test:unit": "jest",
     "eject": "react-scripts eject",
     "format": "prettier --write \"{.storybook,src}/**/*.{js,ts,tsx}\"",
     "storybook:start": "start-storybook -p 6006 -s public",
@@ -57,9 +57,48 @@
       "!src/**/*.stories.{js,jsx,ts,tsx}",
       "!src/testing/**"
     ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest/setupTests.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "testRunner": "<rootDir>/node_modules/jest-circus/runner.js",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "modulePaths": [],
     "moduleNameMapper": {
-      "^react-use-localstorage$": "<rootDir>/node_modules/react-use-localstorage/dist/react-use-localstorage.cjs.development.js"
-    }
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -77,6 +116,11 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "react-app"
     ]
   }
 }

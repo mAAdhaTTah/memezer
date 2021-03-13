@@ -10,22 +10,21 @@ import {
 } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
 import { HOME } from "../home/routes";
-import { useAuth } from "./token";
+import { useClient } from "../api";
 
 export const Login: React.FC = () => {
   const history = useHistory();
-  const auth = useAuth();
+  const client = useClient();
   const {
     handleSubmit,
     control,
     errors,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
       username: "",
       password: "",
     },
-    mode: "onChange",
   });
 
   return (
@@ -38,7 +37,7 @@ export const Login: React.FC = () => {
         container
         direction="column"
         onSubmit={handleSubmit(async (data) => {
-          await auth.login(data.username, data.password);
+          await client.login(data.username, data.password);
           history.push(HOME);
         })}
       >
@@ -89,7 +88,7 @@ export const Login: React.FC = () => {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={isSubmitting || !isValid}
+          disabled={isSubmitting}
         >
           Submit
         </Button>
