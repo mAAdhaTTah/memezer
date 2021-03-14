@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from fastapi import UploadFile
 from sqlalchemy import Column, DateTime, ForeignKey, String, UniqueConstraint
@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, relationship
 
-from ..core.db import Base
+from ..core.db import Base, ModifiesQuery
 from ..core.fs import save_file
 from ..core.settings import settings
 
@@ -49,8 +49,14 @@ class Meme(Base):
     )
 
     @staticmethod
-    def get_memes_from_uploader_id(db: Session, uploader_id: uuid.UUID) -> List[Meme]:
-        return db.query(Meme).filter(Meme.uploader_id == str(uploader_id)).all()
+    def get_memes_from_uploader_id(
+        db: Session,
+        uploader_id: uuid.UUID,
+        modifier: Optional[ModifiesQuery[Meme]] = None,
+    ) -> List[Meme]:
+        query = db.query(Meme).filter(Meme.uploader_id == str(uploader_id))
+        query = modifier.modify_query(query) if modifier is not None else query
+        return query.all()
 
     @staticmethod
     def create_meme(db: Session, *, meme: MemeCreate) -> Meme:
