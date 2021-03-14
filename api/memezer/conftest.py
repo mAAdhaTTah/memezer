@@ -53,7 +53,7 @@ def user(db: Session) -> User:
 @pytest.fixture
 def meme(db: Session, user: User) -> Meme:
     return Meme.create_meme(
-        db, meme=MemeCreate(uploader_id=user.id, filename="test-file.jpg")
+        db, meme=MemeCreate(uploader_id=user.id, filename="trollface.png")
     )
 
 

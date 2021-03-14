@@ -8,6 +8,7 @@ from ..auth.depends import get_authed_user_id
 from ..core.db import get_db
 from .models import Meme
 from .schemas import MemeView
+from .search import MemeSearchParams
 
 router = APIRouter(
     prefix="/memes",
@@ -17,9 +18,11 @@ router = APIRouter(
 
 @router.get("", response_model=List[MemeView])
 def get_memes(
-    db: Session = Depends(get_db), user_id: UUID = Depends(get_authed_user_id)
+    db: Session = Depends(get_db),
+    user_id: UUID = Depends(get_authed_user_id),
+    search: MemeSearchParams = Depends(MemeSearchParams),
 ) -> List[Meme]:
-    return Meme.get_memes_from_uploader_id(db, user_id)
+    return Meme.get_memes_from_uploader_id(db, user_id, modifier=search)
 
 
 @router.post("", response_model=MemeView, status_code=201)

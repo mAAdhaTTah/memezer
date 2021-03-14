@@ -1,8 +1,9 @@
-from typing import Generator
+from typing import Generator, Generic, TypeVar
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm.query import Query
 
 from .settings import settings
 
@@ -18,3 +19,11 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+Q = TypeVar("Q")
+
+
+class ModifiesQuery(Generic[Q]):
+    def modify_query(self, query: "Query[Q]") -> "Query[Q]":
+        return query
