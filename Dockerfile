@@ -1,5 +1,7 @@
 FROM python:3.9.0 as api_build
 
+RUN apt-get update && apt-get install -y tesseract-ocr
+
 WORKDIR /app
 
 COPY ./api/requirements.txt requirements.txt
@@ -30,6 +32,7 @@ FROM python:3.9.0 as app
 
 ENV PYTHONPATH /app
 
+COPY --from=api_build /usr/bin/tesseract /usr/bin/tesseract
 COPY --from=api_build /usr/local/lib/python3.9 /usr/local/lib/python3.9
 COPY --from=api_build /usr/local/bin /usr/local/bin
 
@@ -44,4 +47,4 @@ COPY ./api/gunicorn.conf.py gunicorn.conf.py
 
 EXPOSE 8080
 
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.wsgi:app"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.app:wsgi"]

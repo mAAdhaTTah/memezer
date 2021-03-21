@@ -1,17 +1,22 @@
 from pathlib import Path
 from typing import IO, Generator
 
+import procrastinate
+import procrastinate.testing
 import pytest
+import requests
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from .app import queue, wsgi
 from .auth.token import create_access_token
 from .core.db import Base, SessionLocal, engine
 from .meme.models import Meme
 from .meme.schemas import MemeCreate
 from .user.models import User
 from .user.schemas import UserCreate
-from .wsgi import app
+
+assets_path = Path(__file__).parent.parent / "assets"
 
 
 @pytest.fixture(scope="function")
@@ -24,8 +29,22 @@ def db() -> Generator[Session, None, None]:
 
 
 @pytest.fixture
-def client(db: Session) -> TestClient:
-    return TestClient(app)
+def memory_connector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Generator[procrastinate.testing.InMemoryConnector, None, None]:
+    connector = procrastinate.testing.InMemoryConnector()
+    monkeypatch.setattr(queue, "connector", connector)
+    monkeypatch.setattr(queue.job_manager, "connector", connector)
+    yield connector
+    connector.reset()
+
+
+@pytest.fixture
+def client(
+    memory_connector: procrastinate.testing.InMemoryConnector,
+) -> Generator[requests.Session, None, None]:
+    with TestClient(wsgi) as client:
+        yield client
 
 
 @pytest.fixture
@@ -58,6 +77,11 @@ def meme(db: Session, user: User) -> Meme:
 
 
 @pytest.fixture
-def meme_file() -> Generator[IO, None, None]:
-    with open(Path(__file__).parent / "trollface.png", "rb") as f:
+def trollface_path() -> Path:
+    return assets_path / "trollface.png"
+
+
+@pytest.fixture
+def trollface_file(trollface_path: Path) -> Generator[IO, None, None]:
+    with open(trollface_path, "rb") as f:
         yield f

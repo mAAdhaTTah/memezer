@@ -1,0 +1,35 @@
+version: "3.3"
+services:
+  api:
+    volumes:
+      - ./api:/app
+      - ./web/build:/app/build
+      - ./media:/media
+
+  migrations:
+    volumes:
+      - ./api:/app
+      - ./media:/media
+
+  tasks:
+    volumes:
+      - ./api:/app
+      - ./media:/media
+
+  web:
+    depends_on:
+      - api
+    env_file:
+      - ./web/.env
+    environment:
+      CHOKIDAR_USEPOLLING: 1
+      SKIP_PREFLIGHT_CHECK: "true"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web_build
+    command: npm start
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web:/app

@@ -23,10 +23,6 @@ services:
         INSTALL_DEV: ${INSTALL_DEV-false}
     ports:
       - 8080:8080
-    volumes:
-      - ./api:/app
-      - ./web/build:/app/build
-      - ./media:/media
 
   migrations:
     depends_on:
@@ -34,32 +30,23 @@ services:
     env_file:
       - ./api/.env
     build:
-      context: /
+      context: .
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     command: alembic upgrade head
-    volumes:
-      - ./api:/app
-      - ./media:/media
 
-  web:
+  tasks:
     depends_on:
-      - api
+      - db
     env_file:
-      - ./web/.env
-    environment:
-      CHOKIDAR_USEPOLLING: 1
-      SKIP_PREFLIGHT_CHECK: "true"
+      - ./api/.env
     build:
       context: .
       dockerfile: Dockerfile
-      target: web_build
-    command: npm start
-    ports:
-      - 3000:3000
-    volumes:
-      - ./web:/app
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    command: procrastinate --app=memezer.app.queue worker
 
 volumes:
   db:
