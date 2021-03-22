@@ -15,6 +15,7 @@ class MemeView(MemeBase):
     uploaded_at: datetime
     filename: str
     file_url: AnyHttpUrl
+    overlay_text: Optional[str]
 
     class Config:
         orm_mode = True

@@ -1,31 +1,14 @@
-name: Docker
+name: docker
 
 on:
   push:
     branches: [main]
     tags:
       - "v*"
-  pull_request:
-    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: memezer
-          POSTGRES_DB: memezertest
-          POSTGRES_PASSWORD: password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - uses: actions/checkout@v2
@@ -43,53 +26,18 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - name: Build test image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          tags: maadhattah/memezer:e2e
-          push: false
-          load: true
-      - name: Run migrations
-        run: docker run --network=host -e POSTGRES_SERVER -e POSTGRES_PORT -e POSTGRES_USER -e POSTGRES_DB -e POSTGRES_PASSWORD -e JWT_SECRET_KEY -e MEDIA_PATH maadhattah/memezer:e2e alembic upgrade head
-        env:
-          POSTGRES_SERVER: localhost
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-          POSTGRES_USER: memezer
-          POSTGRES_DB: memezertest
-          POSTGRES_PASSWORD: password
-          JWT_SECRET_KEY: b8cae3ab4b7e6773ecb3f6848cfd816d161b86880cae978bb80d33f34bfdca18
-          MEDIA_PATH: /media
-      - name: Run e2e tests
-        uses: cypress-io/github-action@v2
-        with:
-          wait-on: "http://localhost:8080"
-          working-directory: ./e2e
-          start: docker run --network=host -d -p 8080:8080 -e POSTGRES_SERVER -e POSTGRES_PORT -e POSTGRES_USER -e POSTGRES_DB -e POSTGRES_PASSWORD -e JWT_SECRET_KEY -e MEDIA_PATH maadhattah/memezer:e2e
-        env:
-          POSTGRES_SERVER: localhost
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-          POSTGRES_USER: memezer
-          POSTGRES_DB: memezertest
-          POSTGRES_PASSWORD: password
-          JWT_SECRET_KEY: b8cae3ab4b7e6773ecb3f6848cfd816d161b86880cae978bb80d33f34bfdca18
-          MEDIA_PATH: /media
       - name: Docker Login
         uses: docker/login-action@v1
-        if: github.event_name != 'pull_request'
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Collect Docker tags
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v1
-        if: github.event_name != 'pull_request'
         with:
           images: maadhattah/memezer
       - name: Build and push
         uses: docker/build-push-action@v2
-        if: github.event_name != 'pull_request'
         with:
           context: .
           file: Dockerfile

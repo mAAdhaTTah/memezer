@@ -1,4 +1,12 @@
-import { array, date, Infer, object, string, coerce } from "superstruct";
+import {
+  array,
+  date,
+  Infer,
+  object,
+  string,
+  coerce,
+  nullable,
+} from "superstruct";
 import { parseISO } from "date-fns";
 
 export const MemeView = object({
@@ -7,6 +15,7 @@ export const MemeView = object({
   uploaded_at: coerce(date(), string(), (date) => parseISO(date)),
   filename: string(),
   file_url: string(),
+  overlay_text: nullable(string()),
 });
 
 export const MemeListView = array(MemeView);

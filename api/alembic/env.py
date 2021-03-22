@@ -11,7 +11,7 @@ from memezer.user.models import User  # noqa: F401
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI)
+config.set_main_option("sqlalchemy.url", settings.POSTGRES_DSN)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

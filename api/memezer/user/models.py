@@ -30,7 +30,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
 
-    uploads = relationship("Meme", back_populates="uploader")
+    uploads = relationship("Meme", back_populates="uploader", uselist=True)
 
     @staticmethod
     def get_by_id(db: Session, id: uuid.UUID) -> Optional[User]:
