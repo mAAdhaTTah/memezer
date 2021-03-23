@@ -1,13 +1,18 @@
 import { useCallback } from "react";
-import { shared } from "../config";
 import { useApiResult, useClient } from "../api";
 import { MemeListView } from "./schemas";
+import { MEME_URL } from "./constants";
 
-const MEME_URL = `${shared.API_BASE}/memes`;
+type SearchOptions = {
+  term?: string;
+};
 
-export const useMemes = () => {
+export const useMemes = ({ term }: SearchOptions = {}) => {
   const { api } = useClient();
-  const { result, mutate } = useApiResult(MEME_URL, MemeListView);
+  const { result, mutate } = useApiResult(
+    `${MEME_URL}${term ? `?term=${encodeURIComponent(term)}` : ""}`,
+    MemeListView
+  );
 
   const uploadMeme = useCallback(
     async (file: File) => {
