@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from ..auth.router import router as auth_router
 from ..core.queue import queue
-from ..meme.errors import DuplicateFilenameException
+from ..meme.errors import DuplicateFilenameException, MemeNotFound
 from ..meme.router import router as meme_router
 from ..user.router import router as user_router
 from .settings import settings
@@ -66,4 +66,14 @@ async def duplicate_filename_exception_handler(
     return JSONResponse(
         status_code=409,
         content={"message": f"Filename {err.filename} already exists."},
+    )
+
+
+@wsgi.exception_handler(MemeNotFound)
+async def no_results_exception_handler(
+    request: Request, err: MemeNotFound
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=404,
+        content={"message": f"Meme {err.meme_id} not found."},
     )

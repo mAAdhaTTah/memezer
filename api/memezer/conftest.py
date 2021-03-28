@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import IO, Generator
+from typing import IO, Generator, Tuple
 
 import procrastinate
 import procrastinate.testing
@@ -67,6 +67,21 @@ def user(db: Session) -> User:
             confirm_password="password",
         ),
     )
+
+
+@pytest.fixture
+def two_users(db: Session, user: User) -> Tuple[User, User]:
+    second_user = User.create_user(
+        db,
+        user=UserCreate(
+            username="SecondUser",
+            email="second_user@example.com",
+            password="password",
+            confirm_password="password",
+        ),
+    )
+
+    return user, second_user
 
 
 @pytest.fixture

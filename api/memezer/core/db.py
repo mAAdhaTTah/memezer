@@ -31,7 +31,7 @@ def session() -> Generator[Session, None, None]:
     return get_db()
 
 
-Q = TypeVar("Q")
+Q = TypeVar("Q", bound=Base)
 
 
 class ModifiesQuery(Generic[Q]):

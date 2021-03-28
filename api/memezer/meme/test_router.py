@@ -1,5 +1,5 @@
 from os import path
-from typing import IO
+from typing import IO, List, Tuple
 
 import procrastinate
 from fastapi.encoders import jsonable_encoder
@@ -77,3 +77,85 @@ def test_should_not_create_meme_with_shared_filename(
     )
 
     assert response.status_code == 409
+
+
+def test_should_require_auth_to_view_meme(client: TestClient, meme: Meme) -> None:
+    response = client.get(f"/api/memes/{meme.id}")
+
+    assert response.status_code == 401
+
+
+def test_should_return_meme(authed_client: TestClient, meme: Meme, user: User) -> None:
+    response = authed_client.get(f"/api/memes/{meme.id}")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": str(meme.id),
+        "filename": "trollface.png",
+        "title": "trollface.png",
+        "file_url": f"{settings.MEDIA_URL}/{user.id}/trollface.png",
+        "uploaded_at": jsonable_encoder(meme.uploaded_at),
+        "overlay_text": None,
+    }
+
+
+def test_should_not_return_other_users_meme(
+    authed_client: TestClient, two_users: List[User], db: Session, meme: Meme
+) -> None:
+    meme.uploader_id = two_users[1].id
+    db.commit()
+
+    response = authed_client.get(f"/api/memes/{meme.id}")
+
+    assert response.status_code == 404
+
+
+def test_should_require_auth_to_update_meme(client: TestClient, meme: Meme) -> None:
+    body = {
+        "title": "New title",
+        "overlay_text": "New overlay test",
+    }
+    response = client.put(f"/api/memes/{meme.id}", json=body)
+
+    assert response.status_code == 401
+
+
+def test_should_not_allow_updating_others_meme(
+    authed_client: TestClient, db: Session, meme: Meme, two_users: Tuple[User, User]
+) -> None:
+    meme.uploader_id = two_users[1].id
+    db.commit()
+
+    body = {
+        "title": "New title",
+        "overlay_text": "New overlay test",
+    }
+    response = authed_client.put(f"/api/memes/{meme.id}", json=body)
+
+    assert response.status_code == 404
+
+
+def test_should_update_title_and_overlay_text(
+    authed_client: TestClient, db: Session, meme: Meme, user: User
+) -> None:
+    body = {
+        "title": "New title",
+        "overlay_text": "New overlay test",
+    }
+    response = authed_client.put(f"/api/memes/{meme.id}", json=body)
+
+    db.refresh(meme)
+
+    assert response.json() == {
+        "id": str(meme.id),
+        "filename": "trollface.png",
+        "title": body["title"],
+        "file_url": f"{settings.MEDIA_URL}/{user.id}/trollface.png",
+        "uploaded_at": jsonable_encoder(meme.uploaded_at),
+        "overlay_text": body["overlay_text"],
+    }
+
+    assert body == {
+        "title": meme.title,
+        "overlay_text": meme.overlay_text,
+    }
