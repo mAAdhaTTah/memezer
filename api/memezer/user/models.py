@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import uuid
 from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
 
 from sqlalchemy import Column, String, or_
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
 from ..auth.password import hash_password, verify_password
-from ..core.db import Base
+from ..core.db import PGUUID, Base
 
 if TYPE_CHECKING:
     from ..meme.models import Meme  # noqa: F401
@@ -20,10 +19,10 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(
-        UUID(as_uuid=True),
+        PGUUID,
         primary_key=True,
         index=True,
-        default=uuid.uuid4,
+        default=uuid4,
         unique=True,
     )
     username = Column(String, unique=True, index=True, nullable=False)
@@ -33,7 +32,7 @@ class User(Base):
     uploads = relationship("Meme", back_populates="uploader", uselist=True)
 
     @staticmethod
-    def get_by_id(db: Session, id: uuid.UUID) -> Optional[User]:
+    def get_by_id(db: Session, id: UUID) -> Optional[User]:
         return db.query(User).filter(User.id == id).first()
 
     @staticmethod

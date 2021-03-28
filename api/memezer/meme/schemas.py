@@ -5,15 +5,14 @@ from uuid import UUID
 from pydantic import AnyHttpUrl, BaseModel
 
 
-class MemeBase(BaseModel):
+class MemeFilename(BaseModel):
     filename: str
 
 
-class MemeView(MemeBase):
+class MemeView(MemeFilename):
     id: UUID
     title: str
     uploaded_at: datetime
-    filename: str
     file_url: AnyHttpUrl
     overlay_text: Optional[str]
 
@@ -21,7 +20,7 @@ class MemeView(MemeBase):
         orm_mode = True
 
 
-class MemeCreate(MemeBase):
+class MemeCreate(MemeFilename):
     uploader_id: UUID
     title: Optional[str] = None
 
@@ -30,3 +29,8 @@ class MemeCreate(MemeBase):
         model.update({"uploader_id": str(model["uploader_id"])})
 
         return model
+
+
+class MemeUpdate(BaseModel):
+    title: str
+    overlay_text: str
