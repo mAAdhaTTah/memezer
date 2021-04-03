@@ -29,4 +29,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute(f"DROP SCHEMA {settings.QUEUE_SCHEMA}")
+    op.execute(f"DROP SCHEMA {settings.QUEUE_SCHEMA} CASCADE")
