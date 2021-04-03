@@ -21,8 +21,8 @@ def test_should_return_empty_list_no_matching(db: Session, meme: Meme) -> None:
     assert len(result) == 0
 
 
-def test_should_search_overlay_text(db: Session, meme: Meme) -> None:
-    meme.overlay_text = "a grinning face"
+def test_should_search_accessibility_text(db: Session, meme: Meme) -> None:
+    meme.accessibility_text = "a grinning face"
     db.commit()
 
     result = Meme.get_memes_owned_by(

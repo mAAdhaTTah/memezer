@@ -17,7 +17,7 @@ class MemeSearchParams(ModifiesQuery[Meme]):
                 or_(
                     Meme.title.ilike(f"%{self.term}%"),
                     Meme.filename.ilike(f"%{self.term}%"),
-                    Meme.overlay_text.ilike(f"%{self.term}%"),
+                    Meme.accessibility_text.ilike(f"%{self.term}%"),
                 )
             )
 

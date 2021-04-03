@@ -21,7 +21,7 @@ def test_should_touch_updated_at_on_update(db: Session, meme: Meme) -> None:
         db,
         meme.id,
         meme.uploader_id,
-        update=MemeUpdate(title="New title", overlay_text="New overlay text"),
+        update=MemeUpdate(title="New title", accessibility_text="New overlay text"),
     )
     db.refresh(meme)
 
