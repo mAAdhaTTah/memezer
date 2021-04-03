@@ -30,7 +30,7 @@ def test_should_return_authed_users_memes(
             "title": meme.title,
             "file_url": meme.file_url,
             "uploaded_at": jsonable_encoder(meme.uploaded_at),
-            "overlay_text": None,
+            "accessibility_text": None,
         }
     ]
 
@@ -60,7 +60,7 @@ def test_should_create_meme(
         "title": "trollface.png",
         "file_url": f"{settings.MEDIA_URL}/{user.id}/trollface.png",
         "uploaded_at": jsonable_encoder(meme.uploaded_at),
-        "overlay_text": None,
+        "accessibility_text": None,
     }
 
     assert path.exists(f"{settings.MEDIA_PATH}/{str(user.id)}/trollface.png")
@@ -95,7 +95,7 @@ def test_should_return_meme(authed_client: TestClient, meme: Meme, user: User) -
         "title": "trollface.png",
         "file_url": f"{settings.MEDIA_URL}/{user.id}/trollface.png",
         "uploaded_at": jsonable_encoder(meme.uploaded_at),
-        "overlay_text": None,
+        "accessibility_text": None,
     }
 
 
@@ -113,7 +113,7 @@ def test_should_not_return_other_users_meme(
 def test_should_require_auth_to_update_meme(client: TestClient, meme: Meme) -> None:
     body = {
         "title": "New title",
-        "overlay_text": "New overlay test",
+        "accessibility_text": "New overlay test",
     }
     response = client.put(f"/api/memes/{meme.id}", json=body)
 
@@ -128,19 +128,19 @@ def test_should_not_allow_updating_others_meme(
 
     body = {
         "title": "New title",
-        "overlay_text": "New overlay test",
+        "accessibility_text": "New accessibility test",
     }
     response = authed_client.put(f"/api/memes/{meme.id}", json=body)
 
     assert response.status_code == 404
 
 
-def test_should_update_title_and_overlay_text(
+def test_should_update_title_and_accessibility_text(
     authed_client: TestClient, db: Session, meme: Meme, user: User
 ) -> None:
     body = {
         "title": "New title",
-        "overlay_text": "New overlay test",
+        "accessibility_text": "New accessibility test",
     }
     response = authed_client.put(f"/api/memes/{meme.id}", json=body)
 
@@ -152,10 +152,10 @@ def test_should_update_title_and_overlay_text(
         "title": body["title"],
         "file_url": f"{settings.MEDIA_URL}/{user.id}/trollface.png",
         "uploaded_at": jsonable_encoder(meme.uploaded_at),
-        "overlay_text": body["overlay_text"],
+        "accessibility_text": body["accessibility_text"],
     }
 
     assert body == {
         "title": meme.title,
-        "overlay_text": meme.overlay_text,
+        "accessibility_text": meme.accessibility_text,
     }

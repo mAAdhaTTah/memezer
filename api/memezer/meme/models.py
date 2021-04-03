@@ -42,7 +42,7 @@ class Meme(Base):
         default=lambda ctx: ctx.current_parameters.get("filename"),
     )
     filename = Column(String, nullable=False)
-    overlay_text = Column(String(length=1024), nullable=True)
+    accessibility_text = Column(String(length=1024), nullable=True)
     uploaded_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
     updated_at = Column(
         DateTime(timezone=True),

@@ -14,7 +14,7 @@ class MemeView(MemeFilename):
     title: str
     uploaded_at: datetime
     file_url: AnyHttpUrl
-    overlay_text: Optional[str]
+    accessibility_text: Optional[str]
 
     class Config:
         orm_mode = True
@@ -33,4 +33,4 @@ class MemeCreate(MemeFilename):
 
 class MemeUpdate(BaseModel):
     title: str
-    overlay_text: str
+    accessibility_text: str

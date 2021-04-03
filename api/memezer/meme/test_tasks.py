@@ -17,17 +17,17 @@ def test_should_save_recognized_text(db: Session, meme: Meme) -> None:
 
         mock_recognize.assert_called_with(meme.file_path)
 
-        assert meme.overlay_text == "Recognized text"
+        assert meme.accessibility_text == "Recognized text"
         assert len(meme.ocr_results) == 1
 
         assert meme.ocr_results[0].txt == "Recognized text"
 
 
-def test_should_not_overwrite_overlay_text(db: Session, meme: Meme) -> None:
+def test_should_not_overwrite_accessibility_text(db: Session, meme: Meme) -> None:
     with mock.patch.object(
         ocr, "recognize", return_value="Recognized text"
     ) as mock_recognize:
-        meme.overlay_text = "Original text"
+        meme.accessibility_text = "Original text"
         db.commit()
 
         ocr_meme(str(meme.id))
@@ -36,7 +36,7 @@ def test_should_not_overwrite_overlay_text(db: Session, meme: Meme) -> None:
 
         mock_recognize.assert_called_with(meme.file_path)
 
-        assert meme.overlay_text == "Original text"
+        assert meme.accessibility_text == "Original text"
         assert len(meme.ocr_results) == 1
 
         assert meme.ocr_results[0].txt == "Recognized text"

@@ -15,7 +15,7 @@ def ocr_meme(meme_id: str) -> None:
         txt = ocr.recognize(meme.file_path)
         meme.ocr_results.append(OCRResult(started_at=started_at, txt=txt))
 
-        if meme.overlay_text is None:
-            meme.overlay_text = txt
+        if meme.accessibility_text is None:
+            meme.accessibility_text = txt
 
         db.commit()
