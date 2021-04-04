@@ -1,3 +1,3 @@
 # memezer
 
-**Current Version**: v0.1.0
+**Current Version**: v0.1.1
