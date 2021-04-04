@@ -6,9 +6,13 @@ import {
   Card,
   CardMedia,
   CardContent,
+  CardActions,
+  Button,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import { MemeListView } from "../memes";
 import { UPLOAD } from "../upload";
+import { EDIT } from "../edit";
 import { MainLink } from "./MainLink";
 import { useMediaStyles } from "./styles";
 
@@ -42,6 +46,16 @@ export const SuccessView: React.FC<{ memes: MemeListView }> = ({ memes }) => {
                 {meme.title}
               </Typography>
             </CardContent>
+            <CardActions disableSpacing>
+              <Button
+                size="small"
+                color="primary"
+                component={Link}
+                to={EDIT.replace(":memeId", meme.id)}
+              >
+                Edit
+              </Button>
+            </CardActions>
           </Card>
         </Grid>
       ))}

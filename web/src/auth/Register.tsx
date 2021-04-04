@@ -18,9 +18,8 @@ export const Register: React.FC = () => {
   const {
     handleSubmit,
     control,
-    errors,
     watch,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       username: "",

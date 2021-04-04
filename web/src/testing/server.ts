@@ -45,7 +45,7 @@ export const createMockServer = ({
 
         file_url: "https://via.placeholder.com/400x600",
 
-        overlay_text: null,
+        accessibility_text: null,
       }),
     },
 

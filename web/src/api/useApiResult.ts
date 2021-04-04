@@ -8,10 +8,15 @@ export type ApiError = StructError | AxiosError;
 
 type MutateCallback<T> = (data: T) => Promise<T>;
 
+export type ApiResult<T> = {
+  result: AsyncStatus<T, ApiError>;
+  mutate: MutateCallback<T>;
+};
+
 export const useApiResult = <T, S>(
   url: string,
   struct: Struct<T, S>
-): { result: AsyncStatus<T, ApiError>; mutate: MutateCallback<T> } => {
+): ApiResult<T> => {
   const { data, error } = useSwr<unknown, AxiosError>(url);
 
   const result = useMemo(() => {

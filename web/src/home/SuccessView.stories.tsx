@@ -27,7 +27,7 @@ uploaded.args = {
       filename: "meme-1.jpg",
       file_url: "https://via.placeholder.com/400x600",
       uploaded_at: fromUnixTime(Date.now()),
-      overlay_text: null,
+      accessibility_text: null,
     },
   ],
 };
