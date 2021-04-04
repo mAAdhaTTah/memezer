@@ -15,10 +15,14 @@ export const MemeView = object({
   uploaded_at: coerce(date(), string(), (date) => parseISO(date)),
   filename: string(),
   file_url: string(),
-  overlay_text: nullable(string()),
+  accessibility_text: nullable(string()),
 });
+
+export type MemeView = Infer<typeof MemeView>;
 
 export const MemeListView = array(MemeView);
 
 // eslint-disable-next-line
 export type MemeListView = Infer<typeof MemeListView>;
+
+export type MemeUpdate = Pick<MemeView, "accessibility_text" | "title">;

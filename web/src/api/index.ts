@@ -1,3 +1,4 @@
+export { AsyncResult } from "./async";
 export * from "./useApiResult";
 export { SwrConfigProvider } from "./config";
 export { ClientProvider, useClient } from "./client";
