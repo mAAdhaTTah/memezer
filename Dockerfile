@@ -1,7 +1,5 @@
 FROM python:3.9.0 as api_build
 
-RUN apt-get update && apt-get install -y tesseract-ocr
-
 WORKDIR /app
 
 COPY ./api/requirements.txt requirements.txt
@@ -32,7 +30,8 @@ FROM python:3.9.0 as app
 
 ENV PYTHONPATH /app
 
-COPY --from=api_build /usr/bin/tesseract /usr/bin/tesseract
+RUN apt-get update && apt-get install -y tesseract-ocr
+
 COPY --from=api_build /usr/local/lib/python3.9 /usr/local/lib/python3.9
 COPY --from=api_build /usr/local/bin /usr/local/bin
 
