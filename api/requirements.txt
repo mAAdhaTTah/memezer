@@ -14,3 +14,6 @@ python_jose==3.2.0
 cryptography==3.4.6
 python-multipart==0.0.5
 procrastinate==0.18.2
+typer==0.3.2
+typer-cli==0.0.11
+ipython==7.22.0
