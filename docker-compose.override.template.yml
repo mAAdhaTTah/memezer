@@ -5,16 +5,19 @@ services:
       - ./api:/app
       - ./web/build:/app/build
       - ./media:/media
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh
 
   migrations:
     volumes:
       - ./api:/app
       - ./media:/media
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh
 
   tasks:
     volumes:
       - ./api:/app
       - ./media:/media
+      - ./docker_entrypoint.sh:/docker_entrypoint.sh
 
   web:
     depends_on:
