@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
-from sqlalchemy import Column, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, relationship
 from sqlalchemy.orm.exc import NoResultFound
@@ -42,7 +42,7 @@ class Meme(Base):
         default=lambda ctx: ctx.current_parameters.get("filename"),
     )
     filename = Column(String, nullable=False)
-    accessibility_text = Column(String(length=1024), nullable=True)
+    accessibility_text = Column(Text(), nullable=True)
     uploaded_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
     updated_at = Column(
         DateTime(timezone=True),
@@ -161,6 +161,6 @@ class OCRResult(Base):
     started_at = Column(DateTime(timezone=True), nullable=False)
     finished_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
     meme_id = Column(PGUUID, ForeignKey("memes.id"), index=True)
-    txt = Column(String(length=1024), nullable=False)
+    txt = Column(Text(), nullable=False)
 
     meme = relationship("Meme", back_populates="ocr_results")
