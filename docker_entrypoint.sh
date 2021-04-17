@@ -26,11 +26,12 @@ else
 fi
 chown $MEMEZER_USER:$MEMEZER_USER "$MEDIA_DIR"
 
+$(command -v $1 &> /dev/null)
 # Drop permissions to run commands as the memezer user
-if [[ "$1" == /* || "$1" == "gunicorn" || "$1" == "alembic" || "$1" == "procrastinate" || "$1" == "memezer" ]]; then
+if [[ $? == 0 ]]; then
     # arg 1 is a binary, execute it verbatim
     exec gosu "$MEMEZER_USER" bash -c "$*"
 else
     # no command given, assume args were meant to be passed to memezer cmd
-    exec gosu "$MEMEZER_USER" bash -c "memezer $*"
+    exec gosu "$MEMEZER_USER" bash -c "typer memezer.app run $*"
 fi

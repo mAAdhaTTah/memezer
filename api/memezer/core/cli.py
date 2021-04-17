@@ -1,6 +1,6 @@
 import importlib
 
-from typer import Typer
+from typer import Typer, echo
 
 from .db import session
 
@@ -27,3 +27,13 @@ def shell() -> None:
             imported_objects |= {obj: getattr(module, obj) for obj in objs}
 
         start_ipython(argv=[], user_ns=imported_objects)
+
+
+@cli.command("start")
+def start() -> None:
+    echo("TODO: Start server")
+
+
+@cli.command("upgrade")
+def upgrade() -> None:
+    echo("TODO: upgrade application")
