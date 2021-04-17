@@ -6,8 +6,18 @@ import {
   string,
   coerce,
   nullable,
+  Struct,
+  number,
 } from "superstruct";
 import { parseISO } from "date-fns";
+
+const Page = <T, S>(itemSchema: Struct<T, S>) =>
+  object({
+    total: number(),
+    items: array(itemSchema),
+    page: number(),
+    size: number(),
+  });
 
 export const MemeView = object({
   id: string(),
@@ -18,11 +28,12 @@ export const MemeView = object({
   accessibility_text: nullable(string()),
 });
 
+// eslint-disable-next-line
 export type MemeView = Infer<typeof MemeView>;
 
-export const MemeListView = array(MemeView);
+export const MemeCollectionView = Page(MemeView);
 
 // eslint-disable-next-line
-export type MemeListView = Infer<typeof MemeListView>;
+export type MemeCollectionView = Infer<typeof MemeCollectionView>;
 
 export type MemeUpdate = Pick<MemeView, "accessibility_text" | "title">;

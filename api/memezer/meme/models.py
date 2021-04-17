@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
@@ -89,11 +89,14 @@ class Meme(Base):
         cls,
         db: Session,
         uploader_id: UUID,
-        modifier: Optional[ModifiesQuery[Meme]] = None,
-    ) -> List[Meme]:
+        modifiers: List[ModifiesQuery[Meme]] = [],
+    ) -> Query[Meme]:
         query = cls.get_owned_query(db, uploader_id)
-        query = modifier.modify_query(query) if modifier is not None else query
-        return query.all()
+
+        for modifier in modifiers:
+            query = modifier.modify_query(query)
+
+        return query
 
     @staticmethod
     def create_meme(db: Session, *, meme: MemeCreate) -> Meme:

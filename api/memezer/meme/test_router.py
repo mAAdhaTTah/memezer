@@ -23,16 +23,21 @@ def test_should_return_authed_users_memes(
     response = authed_client.get("/api/memes")
 
     assert response.status_code == 200
-    assert response.json() == [
-        {
-            "id": str(meme.id),
-            "filename": meme.filename,
-            "title": meme.title,
-            "file_url": meme.file_url,
-            "uploaded_at": jsonable_encoder(meme.uploaded_at),
-            "accessibility_text": None,
-        }
-    ]
+    assert response.json() == {
+        "total": 1,
+        "items": [
+            {
+                "id": str(meme.id),
+                "filename": meme.filename,
+                "title": meme.title,
+                "file_url": meme.file_url,
+                "uploaded_at": jsonable_encoder(meme.uploaded_at),
+                "accessibility_text": None,
+            }
+        ],
+        "page": 0,
+        "size": 50,
+    }
 
 
 def test_should_require_auth_to_create_memes(client: TestClient) -> None:
