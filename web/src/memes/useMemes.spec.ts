@@ -12,7 +12,7 @@ describe("useMemes", () => {
       expect(result.current).toEqual({
         result: {
           type: "success",
-          data: [],
+          data: { total: 0, size: 50, page: 0, items: [] },
         },
         uploadMeme: expect.any(Function),
       })
@@ -28,16 +28,21 @@ describe("useMemes", () => {
       expect(result.current).toEqual({
         result: {
           type: "success",
-          data: [
-            {
-              id: meme.id,
-              title: meme.title,
-              filename: meme.filename,
-              file_url: meme.file_url,
-              uploaded_at: expect.any(Date),
-              accessibility_text: null,
-            },
-          ],
+          data: {
+            total: 1,
+            size: 50,
+            page: 0,
+            items: [
+              {
+                id: meme.id,
+                title: meme.title,
+                filename: meme.filename,
+                file_url: meme.file_url,
+                uploaded_at: expect.any(Date),
+                accessibility_text: null,
+              },
+            ],
+          },
         },
         uploadMeme: expect.any(Function),
       })
@@ -52,7 +57,7 @@ describe("useMemes", () => {
       expect(result.current).toEqual({
         result: {
           type: "success",
-          data: [],
+          data: { total: 0, size: 50, page: 0, items: [] },
         },
         uploadMeme: expect.any(Function),
       })
@@ -74,16 +79,21 @@ describe("useMemes", () => {
       expect(result.current).toEqual({
         result: {
           type: "success",
-          data: [
-            {
-              id: meme.id,
-              title: filename,
-              filename,
-              file_url: meme.file_url,
-              uploaded_at: expect.any(Date),
-              accessibility_text: null,
-            },
-          ],
+          data: {
+            total: 1,
+            size: 50,
+            page: 0,
+            items: [
+              {
+                id: meme.id,
+                title: filename,
+                filename,
+                file_url: meme.file_url,
+                uploaded_at: expect.any(Date),
+                accessibility_text: null,
+              },
+            ],
+          },
         },
         uploadMeme: expect.any(Function),
       });

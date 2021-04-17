@@ -68,7 +68,14 @@ export const createMockServer = ({
       });
 
       this.get("/memes", (schema) => {
-        return schema.all("meme").models;
+        const { models } = schema.all("meme");
+
+        return {
+          total: models.length,
+          items: models,
+          size: 50,
+          page: 0,
+        };
       });
 
       this.post("/memes", (schema, request) => {
