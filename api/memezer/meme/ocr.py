@@ -3,10 +3,12 @@ import re
 import subprocess
 from pathlib import Path
 
+from ..core.settings import settings
+
 
 class OCR:
     def __init__(self) -> None:
-        self._tmp_txt_base = "./memeocr"
+        self._tmp_txt_base = f"{settings.MEDIA_PATH}/memeocr"
         self._tmp_txt_fname = self._tmp_txt_base + ".txt"
 
     def recognize(self, fname: Path) -> str:
