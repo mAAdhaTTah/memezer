@@ -1,6 +1,6 @@
 pytest==6.2.2
 rope==0.18.0
-flake8==3.8.4
+flake8==3.9.1
 autoflake==1.4
 mypy==0.812
 sqlalchemy_stubs==0.4
