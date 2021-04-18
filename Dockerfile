@@ -64,13 +64,13 @@ COPY --from=api_build /usr/local/bin /usr/local/bin
 
 WORKDIR /app
 
-COPY --from=web_build /app/build ./build
+COPY --chown=$MEMEZER_USER --from=web_build /app/build ./build
 
-COPY ./api/alembic.ini alembic.ini
-COPY ./api/memezer memezer
-COPY ./api/alembic alembic
-COPY ./api/gunicorn.conf.py gunicorn.conf.py
-COPY ./docker_entrypoint.sh /docker_entrypoint.sh
+COPY --chown=$MEMEZER_USER ./api/alembic.ini alembic.ini
+COPY --chown=$MEMEZER_USER ./api/memezer memezer
+COPY --chown=$MEMEZER_USER ./api/alembic alembic
+COPY --chown=$MEMEZER_USER ./api/gunicorn.conf.py gunicorn.conf.py
+COPY --chown=$MEMEZER_USER ./docker_entrypoint.sh /docker_entrypoint.sh
 
 EXPOSE 8080
 
