@@ -100,3 +100,14 @@ def trollface_path() -> Path:
 def trollface_file(trollface_path: Path) -> Generator[IO, None, None]:
     with open(trollface_path, "rb") as f:
         yield f
+
+
+@pytest.fixture
+def goodpun_path() -> Path:
+    return assets_path / "good-pun.jpg"
+
+
+@pytest.fixture
+def goodpun_file(goodpun_path: Path) -> Generator[IO, None, None]:
+    with open(goodpun_path, "rb") as f:
+        yield f
