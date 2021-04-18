@@ -18,3 +18,4 @@ procrastinate==0.18.2
 typer==0.3.2
 typer-cli==0.0.11
 ipython==7.22.0
+pytesseract==0.3.7
