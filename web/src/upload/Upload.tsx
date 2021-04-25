@@ -12,9 +12,9 @@ export const Upload: React.FC = () => {
     handleSubmit,
     control,
     formState: { isSubmitting, isValid },
-  } = useForm<{ file: null | File }>({
+  } = useForm<{ files: File[] }>({
     defaultValues: {
-      file: null,
+      files: [],
     },
     mode: "onChange",
   });
@@ -34,12 +34,14 @@ export const Upload: React.FC = () => {
         container
         direction="column"
         onSubmit={handleSubmit(async (data) => {
-          await uploadMeme(data.file!);
+          for (const file of data.files) {
+            await uploadMeme(file);
+          }
           history.push("/");
         })}
       >
         <Controller
-          name="file"
+          name="files"
           control={control}
           rules={{
             required: true,
@@ -47,10 +49,10 @@ export const Upload: React.FC = () => {
           render={({ onChange }) => {
             return (
               <DropzoneArea
-                filesLimit={1}
+                filesLimit={10}
                 acceptedFiles={["image/jpeg", "image/png", "image/bmp"]}
                 onChange={(files) => {
-                  onChange(files[0]);
+                  onChange(files);
                 }}
               />
             );

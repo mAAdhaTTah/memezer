@@ -1,11 +1,15 @@
+import filecmp
 from os import path
+from pathlib import Path
 from typing import IO, List, Tuple
+from unittest import mock
 
 import procrastinate
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from ..core.fs import SaveMemeException
 from ..core.settings import settings
 from ..user.models import User
 from .models import Meme
@@ -75,13 +79,31 @@ def test_should_create_meme(
 
 
 def test_should_not_create_meme_with_shared_filename(
-    authed_client: TestClient, trollface_file: IO, meme: Meme
+    authed_client: TestClient, goodpun_file: IO, trollface_path: Path, meme: Meme
 ) -> None:
     response = authed_client.post(
-        "/api/memes", files={"file": (meme.filename, trollface_file, "image/png")}
+        "/api/memes", files={"file": (meme.filename, goodpun_file, "image/png")}
     )
 
     assert response.status_code == 409
+    assert filecmp.cmp(meme.file_path, trollface_path)  # should not be overwritten
+
+
+@mock.patch("memezer.core.fs.fs.save_meme", side_effect=SaveMemeException())
+def test_should_not_create_meme_when_saving_fails(
+    mock_save_file: mock.AsyncMock,
+    db: Session,
+    authed_client: TestClient,
+    trollface_file: IO,
+) -> None:
+    response = authed_client.post(
+        "/api/memes", files={"file": ("trollface.png", trollface_file, "image/png")}
+    )
+
+    assert mock_save_file.called
+    assert response.status_code == 500
+    assert response.json() == {"message": "Failed to save."}
+    assert db.query(Meme).count() == 0
 
 
 def test_should_require_auth_to_view_meme(client: TestClient, meme: Meme) -> None:

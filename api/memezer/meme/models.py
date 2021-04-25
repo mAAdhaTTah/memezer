@@ -13,7 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.query import Query
 
 from ..core.db import PGUUID, Base, ModifiesQuery
-from ..core.fs import save_file
+from ..core.fs import fs
 from ..core.settings import settings
 
 if TYPE_CHECKING:
@@ -99,11 +99,12 @@ class Meme(Base):
         return query
 
     @staticmethod
-    def create_meme(db: Session, *, meme: MemeCreate) -> Meme:
+    def create_meme(db: Session, *, meme: MemeCreate, commit: bool = True) -> Meme:
         db_meme = Meme(**meme.to_orm())
         db.add(db_meme)
-        db.commit()
-        db.refresh(db_meme)
+        if commit:
+            db.commit()
+            db.refresh(db_meme)
 
         return db_meme
 
@@ -112,15 +113,22 @@ class Meme(Base):
         db: Session, uploader_id: UUID, file: UploadFile
     ) -> Meme:
         try:
-            db_meme = Meme.create_meme(
+            meme = Meme.create_meme(
                 db,
                 meme=MemeCreate(uploader_id=uploader_id, filename=file.filename),
+                commit=False,
             )
-            await save_file(db_meme.file_path, file)
-            await ocr_meme.defer_async(meme_id=str(db_meme.id))
+            # flush to throw integrity errors for duplicate files
+            # but don't commit cuz saving might fail.
+            db.flush()
+            db.refresh(meme)
+            await fs.save_meme(meme, file)
+            await ocr_meme.defer_async(meme_id=str(meme.id))
+            db.commit()
 
-            return db_meme
+            return meme
         except IntegrityError:
+            db.rollback()
             raise DuplicateFilenameException(file.filename)
 
     @classmethod

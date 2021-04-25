@@ -10,6 +10,7 @@ from ..core.queue import queue
 from ..meme.errors import DuplicateFilenameException, MemeNotFound
 from ..meme.router import router as meme_router
 from ..user.router import router as user_router
+from .fs import SaveMemeException
 from .settings import settings
 
 wsgi = FastAPI()
@@ -76,4 +77,14 @@ async def no_results_exception_handler(
     return JSONResponse(
         status_code=404,
         content={"message": f"Meme {err.meme_id} not found."},
+    )
+
+
+@wsgi.exception_handler(SaveMemeException)
+async def save_meme_exception_handler(
+    request: Request, err: MemeNotFound
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Failed to save."},
     )
