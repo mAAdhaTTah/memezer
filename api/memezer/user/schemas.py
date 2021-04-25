@@ -2,6 +2,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, validator
 
+from ..auth.password import hash_password
+
 
 class UserBase(BaseModel):
     username: str
@@ -36,3 +38,9 @@ class UserCreate(UserBase):
         if "password" in values and v != values["password"]:
             raise ValueError("passwords do not match")
         return v
+
+    def to_orm(self) -> dict:
+        user_data = self.dict(exclude={"confirm_password"})
+        user_data.update({"password": hash_password(self.password)})
+
+        return user_data

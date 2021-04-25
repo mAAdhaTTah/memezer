@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import Column, String, or_
 from sqlalchemy.orm import Session, relationship
 
-from ..auth.password import hash_password, verify_password
+from ..auth.password import verify_password
 from ..core.db import PGUUID, Base
 
 if TYPE_CHECKING:
@@ -55,10 +55,7 @@ class User(Base):
 
     @staticmethod
     def create_user(db: Session, *, user: UserCreate) -> User:
-        user_data: dict = user.dict(exclude={"confirm_password"})
-        user_data.update({"password": hash_password(user.password)})
-
-        db_user = User(**user_data)
+        db_user = User(**user.to_orm())
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
