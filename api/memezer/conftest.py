@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from shutil import copyfile
 from typing import IO, Generator, Tuple
 
 import procrastinate
@@ -85,10 +87,14 @@ def two_users(db: Session, user: User) -> Tuple[User, User]:
 
 
 @pytest.fixture
-def meme(db: Session, user: User) -> Meme:
-    return Meme.create_meme(
+def meme(db: Session, user: User, trollface_path: Path) -> Meme:
+    meme = Meme.create_meme(
         db, meme=MemeCreate(uploader_id=user.id, filename="trollface.png")
     )
+    os.makedirs(meme.file_path.parent)
+    copyfile(trollface_path, meme.file_path)
+
+    return meme
 
 
 @pytest.fixture
