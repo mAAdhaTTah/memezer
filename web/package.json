@@ -38,7 +38,7 @@
     "superstruct": "^0.14.2",
     "swr": "^0.4.2",
     "typescript": "^4.1.5",
-    "variant": "^2.0.2"
+    "variant": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
