@@ -75,4 +75,4 @@ COPY --chown=$MEMEZER_USER ./docker_entrypoint.sh /docker_entrypoint.sh
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--", "/docker_entrypoint.sh"]
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn.conf.py", "memezer.app:wsgi"]
+CMD ["start", "wsgi"]
