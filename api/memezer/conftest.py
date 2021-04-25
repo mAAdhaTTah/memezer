@@ -19,7 +19,7 @@ from .user.schemas import UserCreate
 assets_path = Path(__file__).parent.parent / "assets"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def db() -> Generator[Session, None, None]:
     Base.metadata.create_all(engine)
     session = SessionLocal()
