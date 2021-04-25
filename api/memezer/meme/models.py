@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, List
+from urllib import parse
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
@@ -66,7 +67,9 @@ class Meme(Base):
 
     @property
     def file_url(self) -> str:
-        return f"{settings.MEDIA_URL}/{str(self.uploader_id)}/{self.filename}"
+        return (
+            f"{settings.MEDIA_URL}/{str(self.uploader_id)}/{parse.quote(self.filename)}"
+        )
 
     @staticmethod
     def get_owned_query(
