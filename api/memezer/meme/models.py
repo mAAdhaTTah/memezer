@@ -172,6 +172,6 @@ class OCRResult(Base):
     started_at = Column(DateTime(timezone=True), nullable=False)
     finished_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
     meme_id = Column(PGUUID, ForeignKey("memes.id"), index=True)
-    txt = Column(Text(), nullable=False)
+    output = Column(Text(), nullable=False)
 
     meme = relationship("Meme", back_populates="ocr_results")

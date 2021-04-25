@@ -1,21 +1,20 @@
-from datetime import datetime
+from uuid import UUID
 
-from ..core.db import session
 from ..core.queue import queue
-from .ocr import ocr
 
 
 @queue.task
-def ocr_meme(meme_id: str) -> None:
-    from .models import Meme, OCRResult
+def ocr_meme(meme_id: UUID) -> None:
+    from ..core.db import session
+    from .models import Meme
+    from .ocr import ocr
 
     with session() as db:
-        started_at = datetime.now()
         meme = db.query(Meme).filter(Meme.id == meme_id).one()
-        txt = ocr.recognize(meme.file_path)
-        meme.ocr_results.append(OCRResult(started_at=started_at, txt=txt))
+        result = ocr.recognize_meme(meme)
+        meme.ocr_results.append(result)
 
         if meme.accessibility_text is None:
-            meme.accessibility_text = txt
+            meme.accessibility_text = result.output
 
         db.commit()

@@ -20,7 +20,7 @@ def test_should_save_recognized_text(db: Session, meme: Meme) -> None:
         assert meme.accessibility_text == "Recognized text"
         assert len(meme.ocr_results) == 1
 
-        assert meme.ocr_results[0].txt == "Recognized text"
+        assert meme.ocr_results[0].output == "Recognized text"
 
 
 def test_should_not_overwrite_accessibility_text(db: Session, meme: Meme) -> None:
@@ -39,4 +39,4 @@ def test_should_not_overwrite_accessibility_text(db: Session, meme: Meme) -> Non
         assert meme.accessibility_text == "Original text"
         assert len(meme.ocr_results) == 1
 
-        assert meme.ocr_results[0].txt == "Recognized text"
+        assert meme.ocr_results[0].output == "Recognized text"
