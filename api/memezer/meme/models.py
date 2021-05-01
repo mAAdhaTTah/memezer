@@ -53,7 +53,9 @@ class Meme(Base):
     )
 
     uploader = relationship("User", back_populates="uploads")
-    ocr_results = relationship("OCRResult", back_populates="meme", uselist=True)
+    ocr_results = relationship(
+        "OCRResult", back_populates="meme", uselist=True, cascade="all, delete"
+    )
 
     __table_args__ = (
         UniqueConstraint("filename", "uploader_id", name="_uploader_filename_uc"),
@@ -131,7 +133,6 @@ class Meme(Base):
 
             return meme
         except IntegrityError:
-            db.rollback()
             raise DuplicateFilenameException(file.filename)
 
     @classmethod
@@ -161,6 +162,22 @@ class Meme(Base):
 
         return cls.get_meme_owned_by(db, meme_id, uploader_id)
 
+    @classmethod
+    def delete_meme_owned_by(
+        cls,
+        db: Session,
+        meme_id: UUID,
+        uploader_id: UUID,
+    ) -> None:
+        try:
+            meme = cls.get_owned_meme_query(db, meme_id, uploader_id).one()
+        except NoResultFound:
+            raise MemeNotFound(meme_id)
+
+        fs.delete_file(meme.file_path)
+        db.delete(meme)
+        db.commit()
+
 
 class OCRResult(Base):
     __tablename__ = "ocr_result"
@@ -174,7 +191,7 @@ class OCRResult(Base):
     )
     started_at = Column(DateTime(timezone=True), nullable=False)
     finished_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now)
-    meme_id = Column(PGUUID, ForeignKey("memes.id"), index=True)
+    meme_id = Column(PGUUID, ForeignKey("memes.id", ondelete="CASCADE"), index=True)
     output = Column(Text(), nullable=False)
 
     meme = relationship("Meme", back_populates="ocr_results")

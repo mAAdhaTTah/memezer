@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, File, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Response, UploadFile
 from fastapi_pagination import Page
 from sqlalchemy.orm import Session
 
@@ -51,3 +51,12 @@ async def update_meme(
     update: MemeUpdate = Body(...),
 ) -> Meme:
     return Meme.update_meme_owned_by(db, meme_id, user_id, update=update)
+
+
+@router.delete("/{meme_id}", response_class=Response, status_code=204)
+def delete_meme(
+    meme_id: UUID,
+    db: Session = Depends(get_db),
+    user_id: UUID = Depends(get_authed_user_id),
+) -> None:
+    return Meme.delete_meme_owned_by(db, meme_id, user_id)

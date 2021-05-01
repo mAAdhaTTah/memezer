@@ -8,7 +8,6 @@ import {
   CardContent,
   CardActions,
   Button,
-  Container,
 } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -23,7 +22,8 @@ export const SuccessView: React.FC<{
   totalPages: number;
   memes: MemeView[];
   onPage: (page: number) => void;
-}> = ({ page, totalPages, memes, onPage }) => {
+  onDeleteClick: (id: MemeView["id"]) => void;
+}> = ({ page, totalPages, memes, onPage, onDeleteClick }) => {
   const classes = useMediaStyles();
 
   if (memes.length === 0) {
@@ -62,6 +62,13 @@ export const SuccessView: React.FC<{
                   to={EDIT.replace(":memeId", meme.id)}
                 >
                   Edit
+                </Button>
+                <Button
+                  size="small"
+                  color="secondary"
+                  onClick={() => onDeleteClick(meme.id)}
+                >
+                  Delete
                 </Button>
               </CardActions>
             </Card>

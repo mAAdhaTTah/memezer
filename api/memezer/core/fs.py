@@ -28,5 +28,8 @@ class Filesystem:
         with open(save_path, "xb") as f:
             f.write(contents.encode("utf-8") if isinstance(contents, str) else contents)
 
+    def delete_file(self, delete_path: Path) -> None:
+        delete_path.unlink()
+
 
 fs = Filesystem()

@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from ..core.fs import SaveMemeException
 from ..core.settings import settings
 from ..user.models import User
-from .models import Meme
+from .models import Meme, OCRResult
 
 
 def test_should_require_auth_to_view_memes(client: TestClient) -> None:
@@ -186,3 +186,36 @@ def test_should_update_title_and_accessibility_text(
         "title": meme.title,
         "accessibility_text": meme.accessibility_text,
     }
+
+
+def test_should_require_auth_to_delete_meme(client: TestClient, meme: Meme) -> None:
+    response = client.get(f"/api/memes/{meme.id}")
+
+    assert response.status_code == 401
+
+
+def test_should_not_allow_deleting_others_meme(
+    authed_client: TestClient, db: Session, meme: Meme, two_users: Tuple[User, User]
+) -> None:
+    meme.uploader_id = two_users[1].id
+    db.commit()
+
+    body = {
+        "title": "New title",
+        "accessibility_text": "New accessibility test",
+    }
+    response = authed_client.put(f"/api/memes/{meme.id}", json=body)
+
+    assert response.status_code == 404
+
+
+def test_should_delete_meme(
+    authed_client: TestClient, db: Session, meme_with_file_and_ocr: Meme
+) -> None:
+    response = authed_client.delete(f"/api/memes/{meme_with_file_and_ocr.id}")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert db.query(Meme).count() == 0
+    assert db.query(OCRResult).count() == 0
+    assert not meme_with_file_and_ocr.file_path.exists()

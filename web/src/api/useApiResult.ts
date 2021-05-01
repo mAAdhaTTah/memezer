@@ -6,11 +6,11 @@ import { AsyncStatus } from "./async";
 
 export type ApiError = StructError | AxiosError;
 
-type MutateCallback<T> = (data: T) => Promise<T>;
+type MutateCallback = (data: unknown, revalidate?: boolean) => Promise<void>;
 
 export type ApiResult<T> = {
   result: AsyncStatus<T, ApiError>;
-  mutate: MutateCallback<T>;
+  mutate: MutateCallback;
 };
 
 export const useApiResult = <T, S>(
@@ -37,5 +37,9 @@ export const useApiResult = <T, S>(
     return AsyncStatus.loading();
   }, [data, error, struct]);
 
-  return { result, mutate: (data: T) => mutate(url, data) };
+  return {
+    result,
+    mutate: (data: unknown, revalidate?: boolean) =>
+      mutate(url, data, revalidate),
+  };
 };
