@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +9,7 @@ from ..auth.router import router as auth_router
 from ..core.queue import queue
 from ..meme.errors import DuplicateFilenameException, MemeNotFound
 from ..meme.router import router as meme_router
+from ..user.errors import AuthenticationFailed
 from ..user.router import router as user_router
 from .fs import SaveMemeException
 from .settings import settings
@@ -65,7 +66,7 @@ async def duplicate_filename_exception_handler(
     request: Request, err: DuplicateFilenameException
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=409,
+        status_code=status.HTTP_409_CONFLICT,
         content={"message": f"Filename {err.filename} already exists."},
     )
 
@@ -75,7 +76,7 @@ async def no_results_exception_handler(
     request: Request, err: MemeNotFound
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=404,
+        status_code=status.HTTP_404_NOT_FOUND,
         content={"message": f"Meme {err.meme_id} not found."},
     )
 
@@ -85,6 +86,16 @@ async def save_meme_exception_handler(
     request: Request, err: MemeNotFound
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=500,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"message": "Failed to save."},
+    )
+
+
+@wsgi.exception_handler(AuthenticationFailed)
+async def auth_failed_exception_hanlder(
+    request: Request, err: AuthenticationFailed
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"message": "Username or password is incorrect."},
     )

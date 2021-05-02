@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, String, or_
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Query, Session, relationship
+from sqlalchemy.orm.exc import NoResultFound
 
 from ..auth.password import verify_password
 from ..core.db import PGUUID, Base
@@ -12,6 +13,7 @@ from ..core.db import PGUUID, Base
 if TYPE_CHECKING:
     from ..meme.models import Meme  # noqa: F401
 
+from .errors import AuthenticationFailed, UserNotFound
 from .schemas import UserCreate
 
 
@@ -32,8 +34,8 @@ class User(Base):
     uploads = relationship("Meme", back_populates="uploader", uselist=True)
 
     @staticmethod
-    def get_by_id(db: Session, id: UUID) -> Optional[User]:
-        return db.query(User).filter(User.id == id).first()
+    def by_id_query(db: Session, id: UUID) -> Query[User]:
+        return db.query(User).filter(User.id == id)
 
     @staticmethod
     def get_by_username(db: Session, username: str) -> Optional[User]:
@@ -62,13 +64,18 @@ class User(Base):
 
         return db_user
 
-    @staticmethod
-    def authenticate(
-        db: Session, username_or_email: str, password: str
-    ) -> Optional[User]:
-        user = User.get_by_username_or_email(db, username_or_email)
+    @classmethod
+    def get_by_id(cls, db: Session, id: UUID) -> User:
+        try:
+            return cls.by_id_query(db, id).one()
+        except NoResultFound:
+            raise UserNotFound(id)
+
+    @classmethod
+    def authenticate(cls, db: Session, username_or_email: str, password: str) -> User:
+        user = cls.get_by_username_or_email(db, username_or_email)
 
         if user is not None and verify_password(password, user.password):
             return user
 
-        return None
+        raise AuthenticationFailed(username_or_email)
