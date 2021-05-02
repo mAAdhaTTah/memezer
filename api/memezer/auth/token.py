@@ -1,18 +1,18 @@
 from datetime import datetime, timedelta
+from uuid import UUID
 
 from jose import jwt
 
 from ..core.settings import settings
-from ..user.models import User
 from .schemas import TokenData
 
 
 def create_access_token(
-    user: User,
+    user_id: UUID,
     expires_delta: timedelta = timedelta(minutes=60),
 ) -> str:
     token_data = {
-        "user_id": str(user.id),
+        "user_id": str(user_id),
         "expires": str(datetime.utcnow() + expires_delta),
     }
     return jwt.encode(

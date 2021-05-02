@@ -52,7 +52,7 @@ def client(
 
 @pytest.fixture
 def authed_client(client: TestClient, user: User) -> TestClient:
-    access_token = create_access_token(user)
+    access_token = create_access_token(user.id)
 
     client.headers.update({"Authorization": f"Bearer {access_token}"})
 

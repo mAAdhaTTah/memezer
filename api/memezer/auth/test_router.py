@@ -65,3 +65,12 @@ def test_should_return_token(client: TestClient, user: User) -> None:
     )
 
     assert response.status_code == 201
+    assert "access_token" in response.json()
+
+
+def test_should_not_auth_with_invalid_password(client: TestClient, user: User) -> None:
+    response = client.post(
+        "/api/auth/login", data={"username": user.username, "password": "wrongpassword"}
+    )
+
+    assert response.status_code == 401
