@@ -30,15 +30,15 @@ export const LoggedInView: React.FC = () => {
       params.term = term;
     }
 
-    const results = validate(pageParam, PageParam, { coerce: true });
+    const validatedPageParam = validate(pageParam, PageParam, { coerce: true });
 
-    if (results[1]) {
-      params.page = Math.max(results[1] - 1, 0);
+    if (validatedPageParam[1]) {
+      params.page = Math.max(validatedPageParam[1] - 1, 0);
     }
 
     return params;
   }, [pageParam, term]);
-  const { result } = useMemes(params);
+  const { result, deleteMeme } = useMemes(params);
 
   useEffect(() => {
     const unregister = history.listen((location) => {
@@ -78,6 +78,7 @@ export const LoggedInView: React.FC = () => {
                 }).toString()}`,
               } as any);
             }}
+            onDeleteClick={(id) => deleteMeme(id)}
           />
         ),
         error: ({ error }) => <ErrorView error={error} />,

@@ -8,6 +8,7 @@ import {
   Grid,
   Button,
   Snackbar,
+  ButtonGroup,
 } from "@material-ui/core";
 import { match } from "variant";
 import { useForm, Controller } from "react-hook-form";
@@ -15,6 +16,7 @@ import { AxiosError } from "axios";
 import { Alert } from "@material-ui/lab";
 import { MemeUpdate, MemeView, useMeme } from "../memes";
 import { AsyncResult } from "../api";
+import { useHistory } from "react-router";
 
 const SuccessView: React.FC<{
   initialMeme: MemeUpdate;
@@ -23,7 +25,8 @@ const SuccessView: React.FC<{
   onSubmit: (
     update: MemeUpdate
   ) => Promise<AsyncResult<MemeView, AxiosError | Error>>;
-}> = ({ initialMeme, memeUrl, memeAlt, onSubmit }) => {
+  onDeleteClick: () => void;
+}> = ({ initialMeme, memeUrl, memeAlt, onSubmit, onDeleteClick }) => {
   const {
     handleSubmit,
     control,
@@ -119,14 +122,18 @@ const SuccessView: React.FC<{
             }}
           />
         </Box>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          Submit
-        </Button>
+        <ButtonGroup variant="contained">
+          <Button color="primary" type="submit" disabled={isSubmitting}>
+            Submit
+          </Button>
+          <Button
+            color="secondary"
+            type="button"
+            onClick={() => onDeleteClick()}
+          >
+            Delete
+          </Button>
+        </ButtonGroup>
       </Grid>
       {snackbar && (
         <Snackbar
@@ -148,7 +155,8 @@ const SuccessView: React.FC<{
 };
 
 export const View: React.FC<{ memeId: string }> = ({ memeId }) => {
-  const { meme, updateMeme } = useMeme(memeId);
+  const { meme, updateMeme, deleteMeme } = useMeme(memeId);
+  const history = useHistory();
 
   return (
     <Container>
@@ -167,6 +175,10 @@ export const View: React.FC<{ memeId: string }> = ({ memeId }) => {
             memeUrl={data.file_url}
             memeAlt={data.title}
             onSubmit={updateMeme}
+            onDeleteClick={async () => {
+              await deleteMeme();
+              history.push("/");
+            }}
           />
         ),
       })}

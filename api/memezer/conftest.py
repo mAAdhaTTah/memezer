@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
 from typing import IO, Generator, Tuple
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 from .app import queue, wsgi
 from .auth.token import create_access_token
 from .core.db import Base, SessionLocal, engine
-from .meme.models import Meme
+from .meme.models import Meme, OCRResult
 from .meme.schemas import MemeCreate
 from .user.models import User
 from .user.schemas import UserCreate
@@ -92,6 +93,16 @@ def meme(db: Session, user: User, trollface_path: Path) -> Meme:
         db, meme=MemeCreate(uploader_id=user.id, filename="trollface.png")
     )
     os.makedirs(meme.file_path.parent)
+    copyfile(trollface_path, meme.file_path)
+
+    return meme
+
+
+@pytest.fixture
+def meme_with_file_and_ocr(db: Session, meme: Meme, trollface_path: str) -> Meme:
+    db.add(OCRResult(started_at=datetime.now(), meme=meme, output="Some result"))
+    db.commit()
+
     copyfile(trollface_path, meme.file_path)
 
     return meme

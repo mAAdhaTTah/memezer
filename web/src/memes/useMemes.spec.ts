@@ -15,6 +15,7 @@ describe("useMemes", () => {
           data: { total: 0, size: 50, page: 0, items: [] },
         },
         uploadMeme: expect.any(Function),
+        deleteMeme: expect.any(Function),
       })
     );
   });
@@ -45,6 +46,7 @@ describe("useMemes", () => {
           },
         },
         uploadMeme: expect.any(Function),
+        deleteMeme: expect.any(Function),
       })
     );
   });
@@ -60,6 +62,7 @@ describe("useMemes", () => {
           data: { total: 0, size: 50, page: 0, items: [] },
         },
         uploadMeme: expect.any(Function),
+        deleteMeme: expect.any(Function),
       })
     );
 
@@ -96,6 +99,7 @@ describe("useMemes", () => {
           },
         },
         uploadMeme: expect.any(Function),
+        deleteMeme: expect.any(Function),
       });
 
       // Should never transition to an error state.
